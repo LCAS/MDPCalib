@@ -39,3 +39,9 @@ target_link_libraries(${PROJECT_NAME}
   ${catkin_LIBRARIES}
   yaml-cpp
 )
+
+catkin_install_python(PROGRAMS
+  scripts/camera_passthrough_adapter.py
+  scripts/calibration_result_monitor.py
+  DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
+)

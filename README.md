@@ -111,6 +111,55 @@ Please execute the following steps in separate terminals:
     - Alternatively (right camera): `roslaunch pose_synchronizer play_bag_kitti_right.launch`
 8. [Optional] Once the fine calibration is finished, you could stop playing the data (Ctrl + c).
 
+### 🤖 Live ROS 2 Calibration
+
+The repository now also contains a non-interactive workflow for calibrating against a live external ROS 2 system:
+
+- `run_mdpcalib_ros2.sh` starts the container, mounts `/data`, launches `roscore`, starts `ros1_bridge`, runs the calibration stack, and exits once the final calibration has been produced.
+- `src/pose_synchronizer/launch/ros2_live_calibration.launch` starts the full live pipeline inside ROS 1: camera passthrough adapter, ORB-SLAM3, FAST-LO, pose synchronizer, CMRNext, optimizer, and a completion monitor.
+- The optimizer exports the final refined transform to a ROS 2 parameter YAML at `/data/calibration/ros2/extrinsics.yaml` by default and also publishes it on `/optimizer/refined_transform`, which the bridge can expose back to ROS 2.
+
+The live pipeline expects the external ROS 2 system to publish at least:
+
+- a camera image topic
+- a matching camera info topic
+- a LiDAR point cloud topic
+- an IMU topic for FAST-LO
+
+Common overrides are passed as environment variables before running `./run_mdpcalib_ros2.sh`:
+
+- `ROS2_CAMERA_IMAGE_TOPIC` and `ROS2_CAMERA_INFO_TOPIC`: ROS 2 camera topics to bridge into the container
+- `ROS2_LIDAR_POINTS_TOPIC` and `ROS2_IMU_TOPIC`: ROS 2 LiDAR and IMU topics
+- `ORB_SLAM3_SETTINGS_FILE`: ORB-SLAM3 camera settings YAML for your robot camera
+- `FAST_LO_CONFIG_FILE`: FAST-LO LiDAR configuration YAML matching your sensor
+- `LIDAR_FRAME_ID` and `CAMERA_FRAME_ID`: frame IDs written into `/optimizer/refined_transform` and the exported ROS 2 YAML
+- `ROS2_CALIBRATION_OUTPUT_PATH`: output path for the exported ROS 2 YAML inside the container
+- `CALIBRATION_TIMEOUT_SEC`: watchdog for unattended runs
+- `MDPCALIB_CLEAN_PREVIOUS_RUNS`: when not set to `false`, the live runner clears `/data/cache/*` and `/data/experiments/*` before starting, matching the legacy tmux workflow
+- `MDPCALIB_REBUILD_WORKSPACE`: when not set to `false`, the live runner executes `catkin build -cs` before launching so the mounted `./src` tree and the container binaries stay aligned
+
+Example:
+
+```bash
+export ROS2_CAMERA_IMAGE_TOPIC=/front_left/image_raw
+export ROS2_CAMERA_INFO_TOPIC=/front_left/camera_info
+export ROS2_LIDAR_POINTS_TOPIC=/os_cloud_node/points
+export ROS2_IMU_TOPIC=/imu/data
+export ORB_SLAM3_SETTINGS_FILE=/data/config/front_left_orbslam3.yaml
+export FAST_LO_CONFIG_FILE=/data/config/ouster_fast_lo.yaml
+export LIDAR_FRAME_ID=os_sensor
+export CAMERA_FRAME_ID=front_left_camera_optical_frame
+./run_mdpcalib_ros2.sh
+```
+
+The exported YAML is ROS 2 parameter-file compatible and includes:
+
+- `mdpcalib_parent_frame`
+- `mdpcalib_child_frame`
+- `mdpcalib_translation_xyz`
+- `mdpcalib_rotation_xyzw`
+- `mdpcalib_transform_matrix_row_major`
+
 
 ## 👩‍⚖️  License
 

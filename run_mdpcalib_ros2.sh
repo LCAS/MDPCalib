@@ -1,0 +1,41 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+REPO_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+DATA_DIR="${MDPCALIB_DATA_DIR:-${REPO_ROOT}/data}"
+
+mkdir -p "${DATA_DIR}"
+
+docker compose run --rm \
+  -e ROS_DOMAIN_ID \
+  -e ROS_LOCALHOST_ONLY \
+  -e ROS2_DISTRO \
+  -e RMW_IMPLEMENTATION \
+  -e ENABLE_ROS2_BRIDGE \
+  -e ROS2_CAMERA_IMAGE_TOPIC \
+  -e ROS2_CAMERA_INFO_TOPIC \
+  -e ROS2_INTERNAL_CAMERA_IMAGE_TOPIC \
+  -e ROS2_INTERNAL_CAMERA_INFO_TOPIC \
+  -e ROS2_LIDAR_POINTS_TOPIC \
+  -e ROS2_IMU_TOPIC \
+  -e FAST_LO_CONFIG_FILE \
+  -e FAST_LO_DISABLE_MOTION_COMPENSATION \
+  -e ORB_SLAM3_SETTINGS_FILE \
+  -e CMRNEXT_WEIGHT_1 \
+  -e CMRNEXT_WEIGHT_2 \
+  -e CMRNEXT_WEIGHT_3 \
+  -e CMRNEXT_IMAGE_HEIGHT \
+  -e CMRNEXT_IMAGE_WIDTH \
+  -e POSE_SYNCHRONIZER_DISABLE \
+  -e LIDAR_FRAME_ID \
+  -e CAMERA_FRAME_ID \
+  -e ROS2_CALIBRATION_OUTPUT_PATH \
+  -e ROS2_CALIBRATION_PARAMETER_ROOT \
+  -e CALIBRATION_TIMEOUT_SEC \
+  -e MDPCALIB_CLEAN_PREVIOUS_RUNS \
+  -e MDPCALIB_REBUILD_WORKSPACE \
+  -e MDPCALIB_RUNTIME_LOG_DIR \
+  -v "${DATA_DIR}:/data" \
+  mdpcalib \
+  bash /root/catkin_ws/src/mdpcalib/pose_synchronizer/scripts/start_ros2_calibration.sh

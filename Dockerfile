@@ -5,6 +5,7 @@ ENV DEBCONF_NONINTERACTIVE_SEEN true
 ENV LANG C.UTF-8
 ENV LC_ALL C.UTF-8
 ENV ROS_DISTRO noetic
+ENV ROS2_DISTRO foxy
 
 RUN \
     # Update nvidia GPG key
@@ -30,6 +31,9 @@ RUN apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys C1CF6E31E6
 RUN echo "deb http://packages.ros.org/ros/ubuntu focal main" > /etc/apt/sources.list.d/ros1-latest.list
 RUN apt-get update && apt-get install -y --no-install-recommends ros-noetic-ros-core=1.5.0-1*
 RUN apt-get update && apt-get install -y --no-install-recommends nano build-essential git byobu curl xclip
+RUN curl -sSL https://raw.githubusercontent.com/ros/rosdistro/master/ros.asc | apt-key add -
+RUN echo "deb http://packages.ros.org/ros2/ubuntu focal main" > /etc/apt/sources.list.d/ros2.list
+RUN apt-get update && apt-get install -y --no-install-recommends ros-foxy-ros-base ros-foxy-ros1-bridge
 
 # ceres dependencies
 RUN apt-get update && apt-get install -y libgoogle-glog-dev libgflags-dev libatlas-base-dev libsuitesparse-dev libeigen3-dev
@@ -43,7 +47,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends libopencv-dev p
 # Additional ROS packages
 RUN apt-get update && apt-get install -y ros-noetic-rviz python3-catkin-tools ros-noetic-tf-conversions ros-noetic-tf2-sensor-msgs ros-noetic-image-transport-plugins ros-noetic-rqt-image-view ros-noetic-message-filters python3-rospy python3-message-filters python3-sensor-msgs python3-pip ros-noetic-geodesy ros-noetic-nmea-msgs ros-noetic-libg2o
 RUN apt-get update && apt-get install -y ros-noetic-ros-numpy
-RUN pip3 install torch==1.11.0+cu113 torchvision==0.12.0+cu113 torchaudio==0.11.0 --extra-index-url https://download.pytorch.org/whl/cu113
+RUN pip3 install typing_extensions==4.8.0 torch==1.11.0+cu113 torchvision==0.12.0+cu113 torchaudio==0.11.0 --extra-index-url https://download.pytorch.org/whl/cu113
 
 RUN apt-get update && apt-get install -y unzip ros-noetic-hector-trajectory-server ros-noetic-image-pipeline
 
@@ -105,7 +109,7 @@ COPY --from=orb_slam3_dependencies /root/ORB_SLAM3/ /root/ORB_SLAM3/
 RUN cd /root/Pangolin/build && cmake --install .
 RUN cd /root/opencv/build && cmake --install .
 RUN cd /root/ceres-solver/bin && make install
-RUN cd /root/ORB_SLAM3/ && mkdir -p build && cd build && cmake .. -DCMAKE_BUILD_TYPE=Release && make -j8
+RUN cd /root/ORB_SLAM3/ && mkdir -p build && cd build && cmake .. -DOpenCV_DIR=/usr/local/lib/cmake/opencv4 -DCMAKE_BUILD_TYPE=Release && make -j8
 
 WORKDIR /
 RUN touch /root/.bashrc

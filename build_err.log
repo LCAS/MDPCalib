@@ -1,0 +1,923 @@
+#0 building with "default" instance using docker driver
+
+#1 [internal] load build definition from Dockerfile
+#1 transferring dockerfile: 8.98kB done
+#1 DONE 0.0s
+
+#2 [internal] load metadata for docker.io/nvidia/cuda:11.3.1-cudnn8-devel-ubuntu20.04
+#2 DONE 0.4s
+
+#3 [internal] load .dockerignore
+#3 transferring context: 91B done
+#3 DONE 0.0s
+
+#4 [base  1/17] FROM docker.io/nvidia/cuda:11.3.1-cudnn8-devel-ubuntu20.04@sha256:bf709b30743d7db557f22a6e10414660f4a4e3cd6ab91b2f9534556c728e5cf7
+#4 DONE 0.0s
+
+#5 [internal] load build context
+#5 transferring context: 10.88kB done
+#5 DONE 0.0s
+
+#6 [building_calibration 20/37] RUN mkdir -p /root/catkin_ws/src
+#6 CACHED
+
+#7 [base 13/17] RUN apt-get update && apt-get install -y ros-noetic-ros-numpy
+#7 CACHED
+
+#8 [building_calibration  6/37] RUN cd /root/opencv/build && cmake --install .
+#8 CACHED
+
+#9 [orb_slam3_dependencies 1/7] WORKDIR /root/
+#9 CACHED
+
+#10 [building_calibration 24/37] RUN python3 setup.py install
+#10 CACHED
+
+#11 [building_calibration  7/37] RUN cd /root/ceres-solver/bin && make install
+#11 CACHED
+
+#12 [pangolin_build 3/6] WORKDIR /root/Pangolin
+#12 CACHED
+
+#13 [ceres_solver_build 3/8] RUN mkdir /root/ceres-solver/bin
+#13 CACHED
+
+#14 [building_calibration 10/37] RUN echo ". /opt/ros/noetic/setup.bash" >> /root/.bashrc
+#14 CACHED
+
+#15 [building_calibration  9/37] RUN touch /root/.bashrc
+#15 CACHED
+
+#16 [pangolin_build 6/6] RUN cd build && cmake --build .
+#16 CACHED
+
+#17 [opencv_build  7/11] RUN rm -rf ./modules/alphamat/ ./modules/aruco/ ./modules/barcode/ ./modules/bgsegm/ ./modules/bioinspired/ ./modules/ccalib/ ./modules/cnn_3dobj/ ./modules/cudabgsegm/ ./modules/cudacodec/ ./modules/cudafeatures2d/ ./modules/cudaobjdetect/ ./modules/cudastereo/ ./modules/cvv/ ./modules/datasets/ ./modules/dnn_objdetect/ ./modules/dnn_superres/ ./modules/dnns_easily_fooled/ ./modules/dpm/ ./modules/face/ ./modules/freetype/ ./modules/fuzzy/ ./modules/hdf/ ./modules/hfs/ ./modules/img_hash/ ./modules/intensity_transform/ ./modules/julia/ ./modules/line_descriptor/ ./modules/matlab/ ./modules/mcc/ ./modules/ovis/ ./modules/phase_unwrapping/ ./modules/quality/ ./modules/rapid/ ./modules/README.md ./modules/reg/ ./modules/rgbd/ ./modules/saliency/ ./modules/sfm/ ./modules/shape/ ./modules/stereo/ ./modules/structured_light/ ./modules/superres/ ./modules/surface_matching/ ./modules/text/ ./modules/videostab/ ./modules/viz/ ./modules/wechat_qrcode/ ./modules/xfeatures2d/ ./modules/xobjdetect/ ./modules/xphoto/
+#17 CACHED
+
+#18 [building_calibration  5/37] RUN cd /root/Pangolin/build && cmake --install .
+#18 CACHED
+
+#19 [opencv_build  5/11] WORKDIR /root/opencv/opencv_contrib
+#19 CACHED
+
+#20 [opencv_build 11/11] RUN cd build && cmake --build . -j $(nproc)
+#20 CACHED
+
+#21 [orb_slam3_dependencies 7/7] RUN cd Vocabulary && tar -xf ORBvoc.txt.tar.gz
+#21 CACHED
+
+#22 [orb_slam3_dependencies 6/7] RUN mkdir -p Thirdparty/Sophus/build && cd Thirdparty/Sophus/build && cmake .. -DCMAKE_BUILD_TYPE=Release && make -j8
+#22 CACHED
+
+#23 [building_calibration  3/37] COPY --from=opencv_build /root/opencv/ /root/opencv/
+#23 CACHED
+
+#24 [opencv_build  6/11] RUN git checkout 4.7.0
+#24 CACHED
+
+#25 [ceres_solver_build 2/8] RUN git clone https://ceres-solver.googlesource.com/ceres-solver
+#25 CACHED
+
+#26 [pangolin_build 4/6] RUN git reset --hard v0.6
+#26 CACHED
+
+#27 [ceres_solver_build 4/8] WORKDIR /root/ceres-solver
+#27 CACHED
+
+#28 [building_calibration 11/37] RUN echo ". /root/catkin_ws/devel/setup.bash" >> /root/.bashrc
+#28 CACHED
+
+#29 [building_calibration 18/37] RUN python3 -m pip install --no-cache-dir --ignore-installed PyYAML==6.0.1 &&     python3 -m pip install --no-cache-dir     numpy==1.20.3     scikit-image     pyquaternion     mathutils==2.81.2     tqdm     python-dateutil==2.8.2     open3d==0.19.0     pillow==10.3.0
+#29 CACHED
+
+#30 [base  5/17] RUN apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys C1CF6E31E6BADE8868B172B4F42ED6FBAB17C654
+#30 CACHED
+
+#31 [base 11/17] RUN apt-get update && apt-get install -y --no-install-recommends libopencv-dev python3-opencv ros-noetic-cv-bridge
+#31 CACHED
+
+#32 [orb_slam3_dependencies 2/7] RUN git clone https://github.com/UZ-SLAMLab/ORB_SLAM3
+#32 CACHED
+
+#33 [base  3/17] RUN truncate -s0 /tmp/preseed.cfg;     echo "tzdata tzdata/Areas select Europe" >> /tmp/preseed.cfg;     echo "tzdata tzdata/Zones/Europe select Berlin" >> /tmp/preseed.cfg;     debconf-set-selections /tmp/preseed.cfg &&     rm -f /etc/timezone /etc/localtime &&     apt-get update &&     apt-get install -y tzdata
+#33 CACHED
+
+#34 [opencv_build  8/11] COPY ./pythoncuda /root/opencv/opencv_contrib/modules/pythoncuda
+#34 CACHED
+
+#35 [building_calibration  2/37] COPY --from=pangolin_build /root/Pangolin/ /root/Pangolin/
+#35 CACHED
+
+#36 [opencv_build  9/11] WORKDIR /root/opencv
+#36 CACHED
+
+#37 [ceres_solver_build 8/8] RUN make -j4
+#37 CACHED
+
+#38 [orb_slam3_dependencies 5/7] RUN mkdir -p Thirdparty/g2o/build && cd Thirdparty/g2o/build && cmake .. -DCMAKE_BUILD_TYPE=Release && make -j8
+#38 CACHED
+
+#39 [building_calibration 23/37] WORKDIR /root/catkin_ws/src/mdpcalib/CMRNext/visibility_pkg
+#39 CACHED
+
+#40 [ceres_solver_build 6/8] WORKDIR /root/ceres-solver/bin
+#40 CACHED
+
+#41 [building_calibration 22/37] WORKDIR /root/catkin_ws/src/mdpcalib/CMRNext
+#41 CACHED
+
+#42 [base  2/17] RUN     rm /etc/apt/sources.list.d/cuda.list &&     apt-key del 7fa2af80 &&     apt-get update && apt-get install -y --no-install-recommends wget &&     wget https://developer.download.nvidia.com/compute/cuda/repos/ubuntu2004/x86_64/cuda-keyring_1.0-1_all.deb &&     dpkg -i cuda-keyring_1.0-1_all.deb
+#42 CACHED
+
+#43 [building_calibration  1/37] COPY --from=ceres_solver_build /root/ceres-solver /root/ceres-solver
+#43 CACHED
+
+#44 [building_calibration 21/37] COPY ./src /root/catkin_ws/src/mdpcalib
+#44 CACHED
+
+#45 [base  6/17] RUN echo "deb http://packages.ros.org/ros/ubuntu focal main" > /etc/apt/sources.list.d/ros1-latest.list
+#45 CACHED
+
+#46 [ceres_solver_build 5/8] RUN git checkout 2.1.0
+#46 CACHED
+
+#47 [base 14/17] RUN python3 -m pip install --no-cache-dir --upgrade "pip<25" setuptools wheel &&     python3 -m pip install --no-cache-dir "typing-extensions<4.13" &&     python3 -m pip install --no-cache-dir     torch==1.11.0+cu113     torchvision==0.12.0+cu113     torchaudio==0.11.0     --extra-index-url https://download.pytorch.org/whl/cu113
+#47 CACHED
+
+#48 [orb_slam3_dependencies 4/7] RUN mkdir -p Thirdparty/DBoW2/build && cd Thirdparty/DBoW2/build && cmake .. -DCMAKE_BUILD_TYPE=Release && make -j8
+#48 CACHED
+
+#49 [opencv_build  4/11] RUN git clone https://github.com/opencv/opencv_contrib.git
+#49 CACHED
+
+#50 [base 17/17] RUN rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
+#50 CACHED
+
+#51 [building_calibration 26/37] RUN /bin/bash -c '. /opt/ros/noetic/setup.bash; catkin config --profile default --cmake-args -DCMAKE_BUILD_TYPE=Release'
+#51 CACHED
+
+#52 [base 15/17] RUN apt-get update && apt-get install -y unzip ros-noetic-hector-trajectory-server ros-noetic-image-pipeline
+#52 CACHED
+
+#53 [base 12/17] RUN apt-get update && apt-get install -y ros-noetic-rviz python3-catkin-tools ros-noetic-tf-conversions ros-noetic-tf2-sensor-msgs ros-noetic-image-transport-plugins ros-noetic-rqt-image-view ros-noetic-message-filters python3-rospy python3-message-filters python3-sensor-msgs python3-pip ros-noetic-geodesy ros-noetic-nmea-msgs ros-noetic-libg2o
+#53 CACHED
+
+#54 [base 16/17] RUN apt-get clean && rm -rf /var/lib/apt/lists/*
+#54 CACHED
+
+#55 [opencv_build  2/11] RUN wget https://github.com/opencv/opencv/archive/4.7.0.zip
+#55 CACHED
+
+#56 [building_calibration 25/37] WORKDIR /root/catkin_ws
+#56 CACHED
+
+#57 [building_calibration  8/37] RUN cd /root/ORB_SLAM3/ && mkdir -p build && cd build && cmake .. -DCMAKE_BUILD_TYPE=Release && make -j8
+#57 CACHED
+
+#58 [ceres_solver_build 7/8] RUN cmake ..
+#58 CACHED
+
+#59 [pangolin_build 5/6] RUN mkdir -p build && cd build && cmake ..
+#59 CACHED
+
+#60 [building_calibration 17/37] RUN python3 -m pip install --no-cache-dir     "setuptools==69.5.1"     "importlib-metadata>=4.6,<8"     "packaging<25"
+#60 CACHED
+
+#61 [base 10/17] RUN apt-get update && apt-get install -y --no-install-recommends libpcl-dev ros-noetic-pcl-ros ros-noetic-pcl-conversions
+#61 CACHED
+
+#62 [base  9/17] RUN apt-get update && apt-get install -y libgoogle-glog-dev libgflags-dev libatlas-base-dev libsuitesparse-dev libeigen3-dev
+#62 CACHED
+
+#63 [building_calibration  4/37] COPY --from=orb_slam3_dependencies /root/ORB_SLAM3/ /root/ORB_SLAM3/
+#63 CACHED
+
+#64 [building_calibration 12/37] RUN mkdir -p /root/catkin_ws/src
+#64 CACHED
+
+#65 [pangolin_build 2/6] RUN git clone --recursive https://github.com/stevenlovegrove/Pangolin.git
+#65 CACHED
+
+#66 [building_calibration 15/37] RUN git clone https://github.com/SMRT-AIST/fast_gicp.git --recursive
+#66 CACHED
+
+#67 [opencv_build 10/11] RUN mkdir -p build && cd build && cmake -DOPENCV_EXTRA_MODULES_PATH=/root/opencv/opencv_contrib/modules -DCMAKE_BUILD_TYPE=RELEASE -D WITH_TBB=ON  -D BUILD_NEW_PYTHON_SUPPORT=ON -D WITH_CUDA=ON -D ENABLE_FAST_MATH=1 -D CUDA_FAST_MATH=1 -D WITH_CUBLAS=1 -D PYTHON3_PACKAGES_PATH=/usr/lib/python3/dist-packages -D CUDA_ARCH_BIN=5.0,5.2,6.1,7.0,7.5,8.0,8.6 -DCUDA_ARCH_PTX=5.2 ../opencv-4.7.0/
+#67 CACHED
+
+#68 [opencv_build  1/11] WORKDIR /root/opencv
+#68 CACHED
+
+#69 [building_calibration 16/37] RUN git clone https://github.com/ethz-asl/image_undistort.git
+#69 CACHED
+
+#70 [base  8/17] RUN apt-get update && apt-get install -y --no-install-recommends nano build-essential git byobu curl xclip
+#70 CACHED
+
+#71 [base  4/17] RUN apt-get update && apt-get install -q -y --no-install-recommends dirmngr gnupg2
+#71 CACHED
+
+#72 [base  7/17] RUN apt-get update && apt-get install -y --no-install-recommends ros-noetic-ros-core=1.5.0-1*
+#72 CACHED
+
+#73 [opencv_build  3/11] RUN unzip 4.7.0.zip
+#73 CACHED
+
+#74 [orb_slam3_dependencies 3/7] WORKDIR /root/ORB_SLAM3/
+#74 CACHED
+
+#75 [building_calibration 13/37] WORKDIR /root/catkin_ws/src
+#75 CACHED
+
+#76 [building_calibration 19/37] WORKDIR /root/catkin_ws
+#76 CACHED
+
+#77 [building_calibration 14/37] RUN git clone https://github.com/koide3/ndt_omp.git
+#77 CACHED
+
+#78 [building_calibration 27/37] RUN /bin/bash -c '. /opt/ros/noetic/setup.bash; catkin config --profile debug -x _debug --cmake-args -DCMAKE_BUILD_TYPE=Debug'
+#78 CACHED
+
+#79 [building_calibration 28/37] RUN /bin/bash -c '. /opt/ros/noetic/setup.bash; catkin build lidar_imu_init -v'
+#79 0.534 -------------------------------------------------------
+#79 0.534 Profile:                     default
+#79 0.534 Extending:             [env] /opt/ros/noetic
+#79 0.534 Workspace:                   /root/catkin_ws
+#79 0.534 -------------------------------------------------------
+#79 0.534 Build Space:        [exists] /root/catkin_ws/build
+#79 0.534 Devel Space:        [exists] /root/catkin_ws/devel
+#79 0.534 Install Space:      [unused] /root/catkin_ws/install
+#79 0.534 Log Space:         [missing] /root/catkin_ws/logs
+#79 0.534 Source Space:       [exists] /root/catkin_ws/src
+#79 0.534 DESTDIR:            [unused] None
+#79 0.534 -------------------------------------------------------
+#79 0.534 Devel Space Layout:          linked
+#79 0.534 Install Space Layout:        None
+#79 0.534 -------------------------------------------------------
+#79 0.534 Additional CMake Args:       -DCMAKE_BUILD_TYPE=Release
+#79 0.534 Additional Make Args:        None
+#79 0.534 Additional catkin Make Args: None
+#79 0.534 Internal Make Job Server:    True
+#79 0.534 Cache Job Environments:      False
+#79 0.534 -------------------------------------------------------
+#79 0.534 Buildlisted Packages:        None
+#79 0.534 Skiplisted Packages:         None
+#79 0.534 -------------------------------------------------------
+#79 0.534 Workspace configuration appears valid.
+#79 0.534 
+#79 0.534 NOTE: Forcing CMake to run for each package.
+#79 0.534 -------------------------------------------------------
+#79 0.534 [build] Found 10 packages in 0.0 seconds.                                      
+#79 0.534 [build] Updating package table.                                                
+#79 0.534 Starting >>> catkin_tools_prebuild                                             
+#79 0.534 Starting >> catkin_tools_prebuild:loadenv                                      
+#79 0.534 Output << catkin_tools_prebuild:loadenv /root/catkin_ws/logs/catkin_tools_prebuild/build.loadenv.000.log
+#79 0.534 Loading environment from: /root/catkin_ws/devel/env.sh
+#79 0.534                         
+#79 0.534 Finished << catkin_tools_prebuild:loadenv                                      
+#79 0.534 Starting >> catkin_tools_prebuild:mkdir                                        
+#79 0.534 Starting >> catkin_tools_prebuild:mkdir                                        
+#79 0.534 Starting >> catkin_tools_prebuild:cache-manifest                               
+#79 0.534 Starting >> catkin_tools_prebuild:cmake                                        
+#79 0.534 Subprocess > catkin_tools_prebuild:cmake `cd /root/catkin_ws/build/catkin_tools_prebuild; catkin build --get-env catkin_tools_prebuild | catkin env -si  /usr/bin/cmake /root/catkin_ws/build/catkin_tools_prebuild --no-warn-unused-cli -DCATKIN_DEVEL_PREFIX=/root/catkin_ws/devel/.private/catkin_tools_prebuild -DCMAKE_INSTALL_PREFIX=/root/catkin_ws/install -DCMAKE_BUILD_TYPE=Release; cd -`
+#79 0.534 [build 0.1 s] [0/2 complete] [1/20 jobs] [0 queued] [catkin_tools_prebuild:... [build 0.2 s] [0/2 complete] [1/20 jobs] [0 queued] [catkin_tools_prebuild:... [build 0.3 s] [0/2 complete] [1/20 jobs] [0 queued] [catkin_tools_prebuild:... [build 0.4 s] [0/2 complete] [1/20 jobs] [0 queued] [catkin_tools_prebuild:... [build 0.5 s] [0/2 complete] [1/20 jobs] [0 queued] [catkin_tools_prebuild:... [build 0.6 s] [0/2 complete] [1/20 jobs] [0 queued] [catkin_tools_prebuild:... [build 0.7 s] [0/2 complete] [1/20 jobs] [0 queued] [catkin_tools_prebuild:... [build 0.8 s] [0/2 complete] [1/20 jobs] [0 queued] [catkin_tools_prebuild:... Output << catkin_tools_prebuild:cmake /root/catkin_ws/logs/catkin_tools_prebuild/build.cmake.000.log
+#79 1.336 Not searching for unused variables given on the command line.
+#79 1.336 Re-run cmake no build system arguments
+#79 1.336 -- The C compiler identification is GNU 9.4.0
+#79 1.336 -- The CXX compiler identification is GNU 9.4.0
+#79 1.336 -- Check for working C compiler: /usr/bin/cc
+#79 1.336 -- Check for working C compiler: /usr/bin/cc -- works
+#79 1.336 -- Detecting C compiler ABI info
+#79 1.336 -- Detecting C compiler ABI info - done
+#79 1.336 -- Detecting C compile features
+#79 1.336 -- Detecting C compile features - done
+#79 1.336 -- Check for working CXX compiler: /usr/bin/c++
+#79 1.336 -- Check for working CXX compiler: /usr/bin/c++ -- works
+#79 1.336 -- Detecting CXX compiler ABI info
+#79 1.336 -- Detecting CXX compiler ABI info - done
+#79 1.336 -- Detecting CXX compile features
+#79 1.336 -- Detecting CXX compile features - done
+#79 1.336 -- Using CATKIN_DEVEL_PREFIX: /root/catkin_ws/devel/.private/catkin_tools_prebuild
+#79 1.336 -- Using CMAKE_PREFIX_PATH: /opt/ros/noetic
+#79 1.336 -- This workspace overlays: /opt/ros/noetic
+#79 1.336 -- Found PythonInterp: /usr/bin/python3 (found suitable version "3.8.10", minimum required is "3")
+#79 1.336 -- Using PYTHON_EXECUTABLE: /usr/bin/python3
+#79 1.336 -- Using Debian Python package layout
+#79 1.336 -- Found PY_em: /usr/lib/python3/dist-packages/em.py
+#79 1.336 -- Using empy: /usr/lib/python3/dist-packages/em.py
+#79 1.336 -- Using CATKIN_ENABLE_TESTING: ON
+#79 1.336 -- Call enable_testing()
+#79 1.336 -- Using CATKIN_TEST_RESULTS_DIR: /root/catkin_ws/build/catkin_tools_prebuild/test_results
+#79 1.336 -- Forcing gtest/gmock from source, though one was otherwise available.
+#79 1.336 -- Found gtest sources under '/usr/src/googletest': gtests will be built
+#79 1.336 -- Found gmock sources under '/usr/src/googletest': gmock will be built
+#79 1.336 -- Found PythonInterp: /usr/bin/python3 (found version "3.8.10")
+#79 1.336 -- Found Threads: TRUE
+#79 1.336 -- Using Python nosetests: /usr/bin/nosetests3
+#79 1.336 -- catkin 0.8.12
+#79 1.336 -- BUILD_SHARED_LIBS is on
+#79 1.336 -- Configuring done
+#79 1.336 -- Generating done
+#79 1.336 -- Build files have been written to: /root/catkin_ws/build/catkin_tools_prebuild
+#79 1.336 cd /root/catkin_ws/build/catkin_tools_prebuild; catkin build --get-env catkin_tools_prebuild | catkin env -si  /usr/bin/cmake /root/catkin_ws/build/catkin_tools_prebuild --no-warn-unused-cli -DCATKIN_DEVEL_PREFIX=/root/catkin_ws/devel/.private/catkin_tools_prebuild -DCMAKE_INSTALL_PREFIX=/root/catkin_ws/install -DCMAKE_BUILD_TYPE=Release; cd -
+#79 1.336 
+#79 1.336 Finished << catkin_tools_prebuild:cmake                                        
+#79 1.336 Starting >> catkin_tools_prebuild:make                                         
+#79 1.336 Subprocess > catkin_tools_prebuild:make `cd /root/catkin_ws/build/catkin_tools_prebuild; catkin build --get-env catkin_tools_prebuild | catkin env -si  /usr/bin/make --jobserver-auth=3,4; cd -`
+#79 1.336 Output << catkin_tools_prebuild:make /root/catkin_ws/logs/catkin_tools_prebuild/build.make.000.log
+#79 1.336 /usr/bin/cmake -S/root/catkin_ws/build/catkin_tools_prebuild -B/root/catkin_ws/build/catkin_tools_prebuild --check-build-system CMakeFiles/Makefile.cmake 0
+#79 1.336 /usr/bin/cmake -E cmake_progress_start /root/catkin_ws/build/catkin_tools_prebuild/CMakeFiles /root/catkin_ws/build/catkin_tools_prebuild/CMakeFiles/progress.marks
+#79 1.336 /usr/bin/make -f CMakeFiles/Makefile2 all
+#79 1.336 make[1]: Entering directory '/root/catkin_ws/build/catkin_tools_prebuild'
+#79 1.336 make[1]: Nothing to be done for 'all'.
+#79 1.336 make[1]: Leaving directory '/root/catkin_ws/build/catkin_tools_prebuild'
+#79 1.336 /usr/bin/cmake -E cmake_progress_start /root/catkin_ws/build/catkin_tools_prebuild/CMakeFiles 0
+#79 1.336 cd /root/catkin_ws/build/catkin_tools_prebuild; catkin build --get-env catkin_tools_prebuild | catkin env -si  /usr/bin/make --jobserver-auth=3,4; cd -
+#79 1.336 
+#79 1.336 Finished << catkin_tools_prebuild:make                                         
+#79 1.336 Starting >> catkin_tools_prebuild:symlink                                      
+#79 1.336 Output << catkin_tools_prebuild:symlink /root/catkin_ws/logs/catkin_tools_prebuild/build.symlink.000.log
+#79 1.336 Symlinking /root/catkin_ws/devel/./setup.sh
+#79 1.336 Symlinking /root/catkin_ws/devel/./local_setup.sh
+#79 1.336 Symlinking /root/catkin_ws/devel/./local_setup.zsh
+#79 1.336 Symlinking /root/catkin_ws/devel/./local_setup.bash
+#79 1.336 Symlinking /root/catkin_ws/devel/./env.sh
+#79 1.336 Symlinking /root/catkin_ws/devel/./setup.bash
+#79 1.336 Symlinking /root/catkin_ws/devel/./setup.zsh
+#79 1.336 Symlinking /root/catkin_ws/devel/./_setup_util.py
+#79 1.336 Symlinking /root/catkin_ws/devel/./local_setup.fish
+#79 1.336 Symlinking /root/catkin_ws/devel/./setup.fish
+#79 1.336 Symlinking /root/catkin_ws/devel/lib/pkgconfig/catkin_tools_prebuild.pc
+#79 1.336 Symlinking /root/catkin_ws/devel/share/catkin_tools_prebuild/cmake/catkin_tools_prebuildConfig.cmake
+#79 1.336 Symlinking /root/catkin_ws/devel/share/catkin_tools_prebuild/cmake/catkin_tools_prebuildConfig-version.cmake
+#79 1.336 
+#79 1.336 Finished << catkin_tools_prebuild:symlink                                      
+#79 1.336 Finished <<< catkin_tools_prebuild                [ 0.9 seconds ]              
+#79 1.336 Starting >>> lidar_imu_init                                                    
+#79 1.336 Starting >> lidar_imu_init:loadenv                                             
+#79 1.336 [build 0.9 s] [1/2 complete] [1/20 jobs] [0 queued] [lidar_imu_init:loadenv... Output << lidar_imu_init:loadenv /root/catkin_ws/logs/lidar_imu_init/build.loadenv.000.log
+#79 1.437 Loading environment from: /root/catkin_ws/devel/env.sh
+#79 1.437                         
+#79 1.437 Finished << lidar_imu_init:loadenv                                             
+#79 1.437 Starting >> lidar_imu_init:mkdir                                               
+#79 1.437 Starting >> lidar_imu_init:mkdir                                               
+#79 1.437 Starting >> lidar_imu_init:cache-manifest                                      
+#79 1.437 Starting >> lidar_imu_init:cmake                                               
+#79 1.437 Subprocess > lidar_imu_init:cmake `cd /root/catkin_ws/build/lidar_imu_init; catkin build --get-env lidar_imu_init | catkin env -si  /usr/bin/cmake /root/catkin_ws/src/mdpcalib/FAST_LO --no-warn-unused-cli -DCATKIN_DEVEL_PREFIX=/root/catkin_ws/devel/.private/lidar_imu_init -DCMAKE_INSTALL_PREFIX=/root/catkin_ws/install -DCMAKE_BUILD_TYPE=Release; cd -`
+#79 1.437 [build 1.0 s] [1/2 complete] [1/20 jobs] [0 queued] [lidar_imu_init:cmake -... [build 1.1 s] [1/2 complete] [1/20 jobs] [0 queued] [lidar_imu_init:cmake -... [build 1.2 s] [1/2 complete] [1/20 jobs] [0 queued] [lidar_imu_init:cmake -... [build 1.3 s] [1/2 complete] [1/20 jobs] [0 queued] [lidar_imu_init:cmake -... [build 1.4 s] [1/2 complete] [1/20 jobs] [0 queued] [lidar_imu_init:cmake -... [build 1.5 s] [1/2 complete] [1/20 jobs] [0 queued] [lidar_imu_init:cmake -... [build 1.6 s] [1/2 complete] [1/20 jobs] [0 queued] [lidar_imu_init:cmake -... [build 1.7 s] [1/2 complete] [1/20 jobs] [0 queued] [lidar_imu_init:cmake -... [build 1.8 s] [1/2 complete] [1/20 jobs] [0 queued] [lidar_imu_init:cmake -... [build 1.9 s] [1/2 complete] [1/20 jobs] [0 queued] [lidar_imu_init:cmake -... [build 2.0 s] [1/2 complete] [1/20 jobs] [0 queued] [lidar_imu_init:cmake -... [build 2.1 s] [1/2 complete] [1/20 jobs] [0 queued] [lidar_imu_init:cmake -... [build 2.2 s] [1/2 complete] [1/20 jobs] [0 queued] [lidar_imu_init:cmake -... [build 2.3 s] [1/2 complete] [1/20 jobs] [0 queued] [lidar_imu_init:cmake -... [build 2.4 s] [1/2 complete] [1/20 jobs] [0 queued] [lidar_imu_init:cmake -... [build 2.5 s] [1/2 complete] [1/20 jobs] [0 queued] [lidar_imu_init:cmake -... [build 2.6 s] [1/2 complete] [1/20 jobs] [0 queued] [lidar_imu_init:cmake -... [build 2.7 s] [1/2 complete] [1/20 jobs] [0 queued] [lidar_imu_init:cmake -... [build 2.8 s] [1/2 complete] [1/20 jobs] [0 queued] [lidar_imu_init:cmake -... [build 2.9 s] [1/2 complete] [1/20 jobs] [0 queued] [lidar_imu_init:cmake -... [build 3.0 s] [1/2 complete] [1/20 jobs] [0 queued] [lidar_imu_init:cmake -... Not searching for unused variables given on the command line.
+#79 3.452 Re-run cmake no build system arguments
+#79 3.452 -- The C compiler identification is GNU 9.4.0
+#79 3.452 -- The CXX compiler identification is GNU 9.4.0
+#79 3.452 -- Check for working C compiler: /usr/bin/cc
+#79 3.452 -- Check for working C compiler: /usr/bin/cc -- works
+#79 3.452 -- Detecting C compiler ABI info
+#79 3.452 -- Detecting C compiler ABI info - done
+#79 3.452 -- Detecting C compile features
+#79 3.452 -- Detecting C compile features - done
+#79 3.452 -- Check for working CXX compiler: /usr/bin/c++
+#79 3.452 -- Check for working CXX compiler: /usr/bin/c++ -- works
+#79 3.452 -- Detecting CXX compiler ABI info
+#79 3.452 -- Detecting CXX compiler ABI info - done
+#79 3.452 -- Detecting CXX compile features
+#79 3.452 -- Detecting CXX compile features - done
+#79 3.452 Current CPU architecture: x86_64
+#79 3.452 Processer number:  20
+#79 3.452 core for MP: 3
+#79 3.452 -- Found PythonLibs: /usr/lib/x86_64-linux-gnu/libpython3.8.so (found version "3.8.10")
+#79 3.452 -- Using CATKIN_DEVEL_PREFIX: /root/catkin_ws/devel/.private/lidar_imu_init
+#79 3.452 -- Using CMAKE_PREFIX_PATH: /root/catkin_ws/devel;/opt/ros/noetic
+#79 3.452 -- This workspace overlays: /root/catkin_ws/devel;/opt/ros/noetic
+#79 3.452 -- Found PythonInterp: /usr/bin/python3 (found suitable version "3.8.10", minimum required is "3")
+#79 3.452 -- Using PYTHON_EXECUTABLE: /usr/bin/python3
+#79 3.452 -- Using Debian Python package layout
+#79 3.452 -- Found PY_em: /usr/lib/python3/dist-packages/em.py
+#79 3.452 -- Using empy: /usr/lib/python3/dist-packages/em.py
+#79 3.452 -- Using CATKIN_ENABLE_TESTING: ON
+#79 3.452 -- Call enable_testing()
+#79 3.452 -- Using CATKIN_TEST_RESULTS_DIR: /root/catkin_ws/build/lidar_imu_init/test_results
+#79 3.452 -- Forcing gtest/gmock from source, though one was otherwise available.
+#79 3.452 -- Found gtest sources under '/usr/src/googletest': gtests will be built
+#79 3.452 -- Found gmock sources under '/usr/src/googletest': gmock will be built
+#79 3.452 -- Found PythonInterp: /usr/bin/python3 (found version "3.8.10")
+#79 3.452 -- Found Threads: TRUE
+#79 3.452 -- Using Python nosetests: /usr/bin/nosetests3
+#79 3.452 -- catkin 0.8.12
+#79 3.452 -- BUILD_SHARED_LIBS is on
+#79 3.452 -- Using these message generators: gencpp;geneus;genlisp;gennodejs;genpy
+#79 3.452 -- Checking for module 'eigen3'
+#79 3.452 --   Found eigen3, version 3.3.7
+#79 3.452 -- Found Eigen: /usr/include/eigen3 (Required is at least version "3.1")
+#79 3.452 -- Eigen found (include: /usr/include/eigen3, version: 3.3.7)
+#79 3.452 -- Found Boost: /usr/include (found suitable version "1.71.0", minimum required is "1.55.0") found components: system filesystem date_time iostreams regex
+#79 3.452 -- Checking for module 'flann'
+#79 3.452 --   Found flann, version 1.9.1
+#79 3.452 -- Found FLANN: /usr/lib/x86_64-linux-gnu/libflann_cpp.so
+#79 3.452 -- The imported target "vtkParseOGLExt" references the file
+#79 3.452    "/usr/bin/vtkParseOGLExt-7.1"
+#79 3.452 but this file does not exist.  Possible reasons include:
+#79 3.452 * The file was deleted, renamed, or moved to another location.
+#79 3.452 * An install or uninstall procedure did not complete successfully.
+#79 3.452 * The installation package was faulty and contained
+#79 3.452    "/usr/lib/cmake/vtk-7.1/VTKTargets.cmake"
+#79 3.452 but not all the files it references.
+#79 3.452 
+#79 3.452 -- The imported target "vtkRenderingPythonTkWidgets" references the file
+#79 3.452    "/usr/lib/x86_64-linux-gnu/libvtkRenderingPythonTkWidgets.so"
+#79 3.452 but this file does not exist.  Possible reasons include:
+#79 3.452 * The file was deleted, renamed, or moved to another location.
+#79 3.452 * An install or uninstall procedure did not complete successfully.
+#79 3.452 * The installation package was faulty and contained
+#79 3.452    "/usr/lib/cmake/vtk-7.1/VTKTargets.cmake"
+#79 3.452 but not all the files it references.
+#79 3.452 
+#79 3.452 -- The imported target "vtk" references the file
+#79 3.452    "/usr/bin/vtk"
+#79 3.452 but this file does not exist.  Possible reasons include:
+#79 3.452 * The file was deleted, renamed, or moved to another location.
+#79 3.452 * An install or uninstall procedure did not complete successfully.
+#79 3.452 * The installation package was faulty and contained
+#79 3.452    "/usr/lib/cmake/vtk-7.1/VTKTargets.cmake"
+#79 3.452 but not all the files it references.
+#79 3.452 
+#79 3.452 -- The imported target "pvtk" references the file
+#79 3.452    "/usr/bin/pvtk"
+#79 3.452 but this file does not exist.  Possible reasons include:
+#79 3.452 * The file was deleted, renamed, or moved to another location.
+#79 3.452 * An install or uninstall procedure did not complete successfully.
+#79 3.452 * The installation package was faulty and contained
+#79 3.452    "/usr/lib/cmake/vtk-7.1/VTKTargets.cmake"
+#79 3.452 but not all the files it references.
+#79 3.452 
+#79 3.452 -- Checking for module 'libusb-1.0'
+#79 3.452 --   No package 'libusb-1.0' found
+#79 3.452 -- Could NOT find USB_10 (missing: USB_10_LIBRARY USB_10_INCLUDE_DIR)
+#79 3.452 -- OpenNI disabled because libusb-1.0 not found.
+#79 3.452 ** WARNING ** io features related to openni will be disabled
+#79 3.452 -- Checking for module 'libusb-1.0'
+#79 3.452 --   No package 'libusb-1.0' found
+#79 3.452 -- Could NOT find USB_10 (missing: USB_10_LIBRARY USB_10_INCLUDE_DIR)
+#79 3.452 -- OpenNI 2 disabled because libusb-1.0 not found.
+#79 3.452 ** WARNING ** io features related to openni2 will be disabled
+#79 3.452 ** WARNING ** io features related to pcap will be disabled
+#79 3.452 ** WARNING ** io features related to png will be disabled
+#79 3.452 -- LIBUSB_1_LIBRARY (missing: LIBUSB_1_INCLUDE_DIR)
+#79 3.452 ** WARNING ** io features related to libusb-1.0 will be disabled
+#79 3.452 -- Checking for module 'libusb-1.0'
+#79 3.452 --   No package 'libusb-1.0' found
+#79 3.452 -- Could NOT find USB_10 (missing: USB_10_LIBRARY USB_10_INCLUDE_DIR)
+#79 3.452 -- OpenNI disabled because libusb-1.0 not found.
+#79 3.452 ** WARNING ** visualization features related to openni will be disabled
+#79 3.452 -- Checking for module 'libusb-1.0'
+#79 3.452 --   No package 'libusb-1.0' found
+#79 3.452 -- Could NOT find USB_10 (missing: USB_10_LIBRARY USB_10_INCLUDE_DIR)
+#79 3.452 -- OpenNI 2 disabled because libusb-1.0 not found.
+#79 3.452 ** WARNING ** visualization features related to openni2 will be disabled
+#79 3.452 -- Found Qhull: optimized;/usr/lib/x86_64-linux-gnu/libqhull.so;debug;/usr/lib/x86_64-linux-gnu/libqhull.so
+#79 3.452 -- QHULL found (include: /usr/include, lib: optimized;/usr/lib/x86_64-linux-gnu/libqhull.so;debug;/usr/lib/x86_64-linux-gnu/libqhull.so)
+#79 3.452 -- Checking for module 'libusb-1.0'
+#79 3.452 --   No package 'libusb-1.0' found
+#79 3.452 -- Could NOT find USB_10 (missing: USB_10_LIBRARY USB_10_INCLUDE_DIR)
+#79 3.452 -- OpenNI disabled because libusb-1.0 not found.
+#79 3.452 ** WARNING ** apps features related to openni will be disabled
+#79 3.452 -- looking for PCL_COMMON
+#79 3.452 -- Found PCL_COMMON: /usr/lib/x86_64-linux-gnu/libpcl_common.so
+#79 3.452 -- looking for PCL_KDTREE
+#79 3.452 -- Found PCL_KDTREE: /usr/lib/x86_64-linux-gnu/libpcl_kdtree.so
+#79 3.452 -- looking for PCL_OCTREE
+#79 3.452 -- Found PCL_OCTREE: /usr/lib/x86_64-linux-gnu/libpcl_octree.so
+#79 3.452 -- looking for PCL_SEARCH
+#79 3.452 -- Found PCL_SEARCH: /usr/lib/x86_64-linux-gnu/libpcl_search.so
+#79 3.452 -- looking for PCL_SAMPLE_CONSENSUS
+#79 3.452 -- Found PCL_SAMPLE_CONSENSUS: /usr/lib/x86_64-linux-gnu/libpcl_sample_consensus.so
+#79 3.452 -- looking for PCL_FILTERS
+#79 3.452 -- Found PCL_FILTERS: /usr/lib/x86_64-linux-gnu/libpcl_filters.so
+#79 3.452 -- looking for PCL_2D
+#79 3.452 -- Found PCL_2D: /usr/include/pcl-1.10
+#79 3.452 -- looking for PCL_GEOMETRY
+#79 3.452 -- Found PCL_GEOMETRY: /usr/include/pcl-1.10
+#79 3.452 -- looking for PCL_IO
+#79 3.452 -- Found PCL_IO: /usr/lib/x86_64-linux-gnu/libpcl_io.so
+#79 3.452 -- looking for PCL_FEATURES
+#79 3.452 -- Found PCL_FEATURES: /usr/lib/x86_64-linux-gnu/libpcl_features.so
+#79 3.452 -- looking for PCL_ML
+#79 3.452 -- Found PCL_ML: /usr/lib/x86_64-linux-gnu/libpcl_ml.so
+#79 3.452 -- looking for PCL_SEGMENTATION
+#79 3.452 -- Found PCL_SEGMENTATION: /usr/lib/x86_64-linux-gnu/libpcl_segmentation.so
+#79 3.452 -- looking for PCL_VISUALIZATION
+#79 3.452 -- Found PCL_VISUALIZATION: /usr/lib/x86_64-linux-gnu/libpcl_visualization.so
+#79 3.452 -- looking for PCL_SURFACE
+#79 3.452 -- Found PCL_SURFACE: /usr/lib/x86_64-linux-gnu/libpcl_surface.so
+#79 3.452 -- looking for PCL_REGISTRATION
+#79 3.452 -- Found PCL_REGISTRATION: /usr/lib/x86_64-linux-gnu/libpcl_registration.so
+#79 3.452 -- looking for PCL_KEYPOINTS
+#79 3.452 -- Found PCL_KEYPOINTS: /usr/lib/x86_64-linux-gnu/libpcl_keypoints.so
+#79 3.452 -- looking for PCL_TRACKING
+#79 3.452 -- Found PCL_TRACKING: /usr/lib/x86_64-linux-gnu/libpcl_tracking.so
+#79 3.452 -- looking for PCL_RECOGNITION
+#79 3.452 -- Found PCL_RECOGNITION: /usr/lib/x86_64-linux-gnu/libpcl_recognition.so
+#79 3.452 -- looking for PCL_STEREO
+#79 3.452 -- Found PCL_STEREO: /usr/lib/x86_64-linux-gnu/libpcl_stereo.so
+#79 3.452 -- looking for PCL_APPS
+#79 3.452 -- Found PCL_APPS: /usr/lib/x86_64-linux-gnu/libpcl_apps.so
+#79 3.452 -- looking for PCL_IN_HAND_SCANNER
+#79 3.452 -- Found PCL_IN_HAND_SCANNER: /usr/include/pcl-1.10
+#79 3.452 -- looking for PCL_POINT_CLOUD_EDITOR
+#79 3.452 -- Found PCL_POINT_CLOUD_EDITOR: /usr/include/pcl-1.10
+#79 3.452 -- looking for PCL_OUTOFCORE
+#79 3.452 -- Found PCL_OUTOFCORE: /usr/lib/x86_64-linux-gnu/libpcl_outofcore.so
+#79 3.452 -- looking for PCL_PEOPLE
+#79 3.452 -- Found PCL_PEOPLE: /usr/lib/x86_64-linux-gnu/libpcl_people.so
+#79 3.452 -- Found PCL: pcl_common;pcl_kdtree;pcl_octree;pcl_search;pcl_sample_consensus;pcl_filters;pcl_io;pcl_features;pcl_ml;pcl_segmentation;pcl_visualization;pcl_surface;pcl_registration;pcl_keypoints;pcl_tracking;pcl_recognition;pcl_stereo;pcl_apps;pcl_outofcore;pcl_people;/usr/lib/x86_64-linux-gnu/libboost_system.so;/usr/lib/x86_64-linux-gnu/libboost_filesystem.so;/usr/lib/x86_64-linux-gnu/libboost_date_time.so;/usr/lib/x86_64-linux-gnu/libboost_iostreams.so;/usr/lib/x86_64-linux-gnu/libboost_regex.so;optimized;/usr/lib/x86_64-linux-gnu/libqhull.so;debug;/usr/lib/x86_64-linux-gnu/libqhull.so;vtkChartsCore;vtkCommonColor;vtkCommonCore;vtksys;vtkCommonDataModel;vtkCommonMath;vtkCommonMisc;vtkCommonSystem;vtkCommonTransforms;vtkCommonExecutionModel;vtkFiltersGeneral;vtkCommonComputationalGeometry;vtkFiltersCore;vtkInfovisCore;vtkFiltersExtraction;vtkFiltersStatistics;vtkImagingFourier;vtkImagingCore;vtkalglib;vtkRenderingContext2D;vtkRenderingCore;vtkFiltersGeometry;vtkFiltersSources;vtkRenderingFreeType;/usr/lib/x86_64-linux-gnu/libfreetype.so;/usr/lib/x86_64-linux-gnu/libz.so;vtkFiltersModeling;vtkImagingSources;vtkInteractionStyle;vtkInteractionWidgets;vtkFiltersHybrid;vtkImagingColor;vtkImagingGeneral;vtkImagingHybrid;vtkIOImage;vtkDICOMParser;vtkmetaio;/usr/lib/x86_64-linux-gnu/libjpeg.so;/usr/lib/x86_64-linux-gnu/libpng.so;/usr/lib/x86_64-linux-gnu/libtiff.so;vtkRenderingAnnotation;vtkRenderingVolume;vtkIOXML;vtkIOCore;vtkIOXMLParser;/usr/lib/x86_64-linux-gnu/libexpat.so;vtkIOGeometry;vtkIOLegacy;vtkIOPLY;vtkRenderingLOD;vtkViewsContext2D;vtkViewsCore;vtkRenderingContextOpenGL2;vtkRenderingOpenGL2;FLANN::FLANN (Required is at least version "1.8")
+#79 3.452 -- Found CXSparse: /usr/include/suitesparse (found suitable version "3.2.0", minimum required is "3.2.0")
+#79 3.452 -- Found BLAS: /usr/lib/x86_64-linux-gnu/libf77blas.so;/usr/lib/x86_64-linux-gnu/libatlas.so
+#79 3.452 -- Found AMD headers in: /usr/include/suitesparse
+#79 3.452 -- Found AMD library: /usr/lib/x86_64-linux-gnu/libamd.so
+#79 3.452 -- Found CAMD headers in: /usr/include/suitesparse
+#79 3.452 -- Found CAMD library: /usr/lib/x86_64-linux-gnu/libcamd.so
+#79 3.452 -- Found CCOLAMD headers in: /usr/include/suitesparse
+#79 3.452 -- Found CCOLAMD library: /usr/lib/x86_64-linux-gnu/libccolamd.so
+#79 3.452 -- Found CHOLMOD headers in: /usr/include/suitesparse
+#79 3.452 -- Found CHOLMOD library: /usr/lib/x86_64-linux-gnu/libcholmod.so
+#79 3.452 -- Found COLAMD headers in: /usr/include/suitesparse
+#79 3.452 -- Found COLAMD library: /usr/lib/x86_64-linux-gnu/libcolamd.so
+#79 3.452 -- Found SPQR headers in: /usr/include/suitesparse
+#79 3.452 -- Found SPQR library: /usr/lib/x86_64-linux-gnu/libspqr.so
+#79 3.452 -- Found Config headers in: /usr/include/suitesparse
+#79 3.452 -- Found Config library: /usr/lib/x86_64-linux-gnu/libsuitesparseconfig.so
+#79 3.452 -- Found Intel Thread Building Blocks (TBB) library (2020.1 / 11101) include location: . Assuming SuiteSparseQR was compiled with TBB.
+#79 3.452 -- Looking for shm_open in rt
+#79 3.452 -- Looking for shm_open in rt - found
+#79 3.452 -- Adding librt to SuiteSparse_config libraries (required on Linux & Unix [not OSX] if SuiteSparse is compiled with timing).
+#79 3.452 -- Could NOT find METIS (missing: METIS_INCLUDE_DIR METIS_LIBRARY)
+#79 3.452 -- Found SuiteSparse: /usr/include/suitesparse (found suitable version "5.7.1", minimum required is "5.7.1") found components: AMD CAMD CCOLAMD CHOLMOD COLAMD SPQR Config
+#79 3.452 -- Found required Ceres dependency: Eigen version 3.3.7 in /usr/lib/cmake/eigen3
+#79 3.452 -- Found required Ceres dependency: glog
+#79 3.452 -- Found required Ceres dependency: gflags
+#79 3.452 -- Found Ceres version: 2.1.0 installed in: /usr/local with components: [EigenSparse, SparseLinearAlgebraLibrary, LAPACK, SuiteSparse, CXSparse, SchurSpecializations, Multithreading]
+#79 3.452 Eigen:/usr/include/eigen3
+#79 3.452 -- lidar_imu_init: 2 messages, 0 services
+#79 3.452 -- Configuring done
+#79 3.452 -- Generating done
+#79 3.452 -- Build files have been written to: /root/catkin_ws/build/lidar_imu_init
+#79 3.452 cd /root/catkin_ws/build/lidar_imu_init; catkin build --get-env lidar_imu_init | catkin env -si  /usr/bin/cmake /root/catkin_ws/src/mdpcalib/FAST_LO --no-warn-unused-cli -DCATKIN_DEVEL_PREFIX=/root/catkin_ws/devel/.private/lidar_imu_init -DCMAKE_INSTALL_PREFIX=/root/catkin_ws/install -DCMAKE_BUILD_TYPE=Release; cd -
+#79 3.542 
+#79 3.542 Finished << lidar_imu_init:cmake                                               
+#79 3.542 Starting >> lidar_imu_init:make                                                
+#79 3.542 Subprocess > lidar_imu_init:make `cd /root/catkin_ws/build/lidar_imu_init; catkin build --get-env lidar_imu_init | catkin env -si  /usr/bin/make --jobserver-auth=3,4; cd -`
+#79 3.542 [build 3.1 s] [1/2 complete] [9/20 jobs] [0 queued] [lidar_imu_init:make (5... [build 3.2 s] [1/2 complete] [3/20 jobs] [0 queued] [lidar_imu_init:make (5... [build 3.3 s] [1/2 complete] [2/20 jobs] [0 queued] [lidar_imu_init:make (5... [build 3.4 s] [1/2 complete] [2/20 jobs] [0 queued] [lidar_imu_init:make (5... [build 3.5 s] [1/2 complete] [8/20 jobs] [0 queued] [lidar_imu_init:make (9... [build 3.6 s] [1/2 complete] [8/20 jobs] [0 queued] [lidar_imu_init:make (9... [build 3.7 s] [1/2 complete] [8/20 jobs] [0 queued] [lidar_imu_init:make (9... [build 3.8 s] [1/2 complete] [8/20 jobs] [0 queued] [lidar_imu_init:make (9... [build 3.9 s] [1/2 complete] [8/20 jobs] [0 queued] [lidar_imu_init:make (9... [build 4.0 s] [1/2 complete] [8/20 jobs] [0 queued] [lidar_imu_init:make (9... [build 4.1 s] [1/2 complete] [8/20 jobs] [0 queued] [lidar_imu_init:make (9... [build 4.2 s] [1/2 complete] [8/20 jobs] [0 queued] [lidar_imu_init:make (9... [build 4.3 s] [1/2 complete] [8/20 jobs] [0 queued] [lidar_imu_init:make (9... [build 4.4 s] [1/2 complete] [8/20 jobs] [0 queued] [lidar_imu_init:make (9... [build 4.5 s] [1/2 complete] [6/20 jobs] [0 queued] [lidar_imu_init:make (9... [build 4.6 s] [1/2 complete] [5/20 jobs] [0 queued] [lidar_imu_init:make (9... [build 4.7 s] [1/2 complete] [5/20 jobs] [0 queued] [lidar_imu_init:make (9... [build 4.8 s] [1/2 complete] [4/20 jobs] [0 queued] [lidar_imu_init:make (9... [build 4.9 s] [1/2 complete] [4/20 jobs] [0 queued] [lidar_imu_init:make (9... [build 5.0 s] [1/2 complete] [4/20 jobs] [0 queued] [lidar_imu_init:make (9... [build 5.1 s] [1/2 complete] [4/20 jobs] [0 queued] [lidar_imu_init:make (9... [build 5.2 s] [1/2 complete] [4/20 jobs] [0 queued] [lidar_imu_init:make (9... [build 5.3 s] [1/2 complete] [4/20 jobs] [0 queued] [lidar_imu_init:make (9... [build 5.4 s] [1/2 complete] [4/20 jobs] [0 queued] [lidar_imu_init:make (9... [build 5.5 s] [1/2 complete] [3/20 jobs] [0 queued] [lidar_imu_init:make (9... [build 5.6 s] [1/2 complete] [3/20 jobs] [0 queued] [lidar_imu_init:make (9... [build 5.7 s] [1/2 complete] [3/20 jobs] [0 queued] [lidar_imu_init:make (9... [build 5.8 s] [1/2 complete] [2/20 jobs] [0 queued] [lidar_imu_init:make (9... [build 5.9 s] [1/2 complete] [2/20 jobs] [0 queued] [lidar_imu_init:make (9... [build 6.0 s] [1/2 complete] [2/20 jobs] [0 queued] [lidar_imu_init:make (9... [build 6.1 s] [1/2 complete] [2/20 jobs] [0 queued] [lidar_imu_init:make (9... [build 6.2 s] [1/2 complete] [2/20 jobs] [0 queued] [lidar_imu_init:make (9... [build 6.3 s] [1/2 complete] [2/20 jobs] [0 queued] [lidar_imu_init:make (9... [build 6.4 s] [1/2 complete] [2/20 jobs] [0 queued] [lidar_imu_init:make (9... [build 6.5 s] [1/2 complete] [2/20 jobs] [0 queued] [lidar_imu_init:make (9... [build 6.6 s] [1/2 complete] [2/20 jobs] [0 queued] [lidar_imu_init:make (9... [build 6.7 s] [1/2 complete] [2/20 jobs] [0 queued] [lidar_imu_init:make (9... [build 6.8 s] [1/2 complete] [2/20 jobs] [0 queued] [lidar_imu_init:make (9... [build 6.9 s] [1/2 complete] [2/20 jobs] [0 queued] [lidar_imu_init:make (9... [build 7.0 s] [1/2 complete] [2/20 jobs] [0 queued] [lidar_imu_init:make (9... [build 7.1 s] [1/2 complete] [2/20 jobs] [0 queued] [lidar_imu_init:make (9... [build 7.2 s] [1/2 complete] [2/20 jobs] [0 queued] [lidar_imu_init:make (9... [build 7.3 s] [1/2 complete] [2/20 jobs] [0 queued] [lidar_imu_init:make (9... [build 7.4 s] [1/2 complete] [2/20 jobs] [0 queued] [lidar_imu_init:make (9... [build 7.5 s] [1/2 complete] [2/20 jobs] [0 queued] [lidar_imu_init:make (9... [build 7.6 s] [1/2 complete] [2/20 jobs] [0 queued] [lidar_imu_init:make (9... [build 7.7 s] [1/2 complete] [2/20 jobs] [0 queued] [lidar_imu_init:make (9... [build 7.8 s] [1/2 complete] [2/20 jobs] [0 queued] [lidar_imu_init:make (9... [build 7.9 s] [1/2 complete] [2/20 jobs] [0 queued] [lidar_imu_init:make (9... [build 8.0 s] [1/2 complete] [2/20 jobs] [0 queued] [lidar_imu_init:make (9... [build 8.1 s] [1/2 complete] [2/20 jobs] [0 queued] [lidar_imu_init:make (9... /usr/bin/cmake -S/root/catkin_ws/src/mdpcalib/FAST_LO -B/root/catkin_ws/build/lidar_imu_init --check-build-system CMakeFiles/Makefile.cmake 0
+#79 8.609 /usr/bin/cmake -E cmake_progress_start /root/catkin_ws/build/lidar_imu_init/CMakeFiles /root/catkin_ws/build/lidar_imu_init/CMakeFiles/progress.marks
+#79 8.609 /usr/bin/make -f CMakeFiles/Makefile2 all
+#79 8.609 make[1]: Entering directory '/root/catkin_ws/build/lidar_imu_init'
+#79 8.609 /usr/bin/make -f CMakeFiles/_lidar_imu_init_generate_messages_check_deps_Pose6D.dir/build.make CMakeFiles/_lidar_imu_init_generate_messages_check_deps_Pose6D.dir/depend
+#79 8.609 /usr/bin/make -f CMakeFiles/_lidar_imu_init_generate_messages_check_deps_States.dir/build.make CMakeFiles/_lidar_imu_init_generate_messages_check_deps_States.dir/depend
+#79 8.609 /usr/bin/make -f CMakeFiles/geometry_msgs_generate_messages_py.dir/build.make CMakeFiles/geometry_msgs_generate_messages_py.dir/depend
+#79 8.609 /usr/bin/make -f CMakeFiles/geometry_msgs_generate_messages_nodejs.dir/build.make CMakeFiles/geometry_msgs_generate_messages_nodejs.dir/depend
+#79 8.609 /usr/bin/make -f CMakeFiles/geometry_msgs_generate_messages_eus.dir/build.make CMakeFiles/geometry_msgs_generate_messages_eus.dir/depend
+#79 8.609 /usr/bin/make -f CMakeFiles/geometry_msgs_generate_messages_lisp.dir/build.make CMakeFiles/geometry_msgs_generate_messages_lisp.dir/depend
+#79 8.609 /usr/bin/make -f CMakeFiles/geometry_msgs_generate_messages_cpp.dir/build.make CMakeFiles/geometry_msgs_generate_messages_cpp.dir/depend
+#79 8.609 make[2]: Entering directory '/root/catkin_ws/build/lidar_imu_init'
+#79 8.609 cd /root/catkin_ws/build/lidar_imu_init && /usr/bin/cmake -E cmake_depends "Unix Makefiles" /root/catkin_ws/src/mdpcalib/FAST_LO /root/catkin_ws/src/mdpcalib/FAST_LO /root/catkin_ws/build/lidar_imu_init /root/catkin_ws/build/lidar_imu_init /root/catkin_ws/build/lidar_imu_init/CMakeFiles/_lidar_imu_init_generate_messages_check_deps_Pose6D.dir/DependInfo.cmake --color=
+#79 8.609 make[2]: Entering directory '/root/catkin_ws/build/lidar_imu_init'
+#79 8.609 cd /root/catkin_ws/build/lidar_imu_init && /usr/bin/cmake -E cmake_depends "Unix Makefiles" /root/catkin_ws/src/mdpcalib/FAST_LO /root/catkin_ws/src/mdpcalib/FAST_LO /root/catkin_ws/build/lidar_imu_init /root/catkin_ws/build/lidar_imu_init /root/catkin_ws/build/lidar_imu_init/CMakeFiles/_lidar_imu_init_generate_messages_check_deps_States.dir/DependInfo.cmake --color=
+#79 8.609 make[2]: Entering directory '/root/catkin_ws/build/lidar_imu_init'
+#79 8.609 cd /root/catkin_ws/build/lidar_imu_init && /usr/bin/cmake -E cmake_depends "Unix Makefiles" /root/catkin_ws/src/mdpcalib/FAST_LO /root/catkin_ws/src/mdpcalib/FAST_LO /root/catkin_ws/build/lidar_imu_init /root/catkin_ws/build/lidar_imu_init /root/catkin_ws/build/lidar_imu_init/CMakeFiles/geometry_msgs_generate_messages_eus.dir/DependInfo.cmake --color=
+#79 8.609 make[2]: Entering directory '/root/catkin_ws/build/lidar_imu_init'
+#79 8.609 cd /root/catkin_ws/build/lidar_imu_init && /usr/bin/cmake -E cmake_depends "Unix Makefiles" /root/catkin_ws/src/mdpcalib/FAST_LO /root/catkin_ws/src/mdpcalib/FAST_LO /root/catkin_ws/build/lidar_imu_init /root/catkin_ws/build/lidar_imu_init /root/catkin_ws/build/lidar_imu_init/CMakeFiles/geometry_msgs_generate_messages_py.dir/DependInfo.cmake --color=
+#79 8.609 make[2]: Entering directory '/root/catkin_ws/build/lidar_imu_init'
+#79 8.609 cd /root/catkin_ws/build/lidar_imu_init && /usr/bin/cmake -E cmake_depends "Unix Makefiles" /root/catkin_ws/src/mdpcalib/FAST_LO /root/catkin_ws/src/mdpcalib/FAST_LO /root/catkin_ws/build/lidar_imu_init /root/catkin_ws/build/lidar_imu_init /root/catkin_ws/build/lidar_imu_init/CMakeFiles/geometry_msgs_generate_messages_lisp.dir/DependInfo.cmake --color=
+#79 8.609 make[2]: Entering directory '/root/catkin_ws/build/lidar_imu_init'
+#79 8.609 cd /root/catkin_ws/build/lidar_imu_init && /usr/bin/cmake -E cmake_depends "Unix Makefiles" /root/catkin_ws/src/mdpcalib/FAST_LO /root/catkin_ws/src/mdpcalib/FAST_LO /root/catkin_ws/build/lidar_imu_init /root/catkin_ws/build/lidar_imu_init /root/catkin_ws/build/lidar_imu_init/CMakeFiles/geometry_msgs_generate_messages_nodejs.dir/DependInfo.cmake --color=
+#79 8.609 make[2]: Entering directory '/root/catkin_ws/build/lidar_imu_init'
+#79 8.609 cd /root/catkin_ws/build/lidar_imu_init && /usr/bin/cmake -E cmake_depends "Unix Makefiles" /root/catkin_ws/src/mdpcalib/FAST_LO /root/catkin_ws/src/mdpcalib/FAST_LO /root/catkin_ws/build/lidar_imu_init /root/catkin_ws/build/lidar_imu_init /root/catkin_ws/build/lidar_imu_init/CMakeFiles/geometry_msgs_generate_messages_cpp.dir/DependInfo.cmake --color=
+#79 8.609 Dependee "/root/catkin_ws/build/lidar_imu_init/CMakeFiles/geometry_msgs_generate_messages_py.dir/DependInfo.cmake" is newer than depender "/root/catkin_ws/build/lidar_imu_init/CMakeFiles/geometry_msgs_generate_messages_py.dir/depend.internal".
+#79 8.609 Dependee "/root/catkin_ws/build/lidar_imu_init/CMakeFiles/geometry_msgs_generate_messages_cpp.dir/DependInfo.cmake" is newer than depender "/root/catkin_ws/build/lidar_imu_init/CMakeFiles/geometry_msgs_generate_messages_cpp.dir/depend.internal".
+#79 8.609 Dependee "/root/catkin_ws/build/lidar_imu_init/CMakeFiles/geometry_msgs_generate_messages_nodejs.dir/DependInfo.cmake" is newer than depender "/root/catkin_ws/build/lidar_imu_init/CMakeFiles/geometry_msgs_generate_messages_nodejs.dir/depend.internal".
+#79 8.609 Dependee "/root/catkin_ws/build/lidar_imu_init/CMakeFiles/CMakeDirectoryInformation.cmake" is newer than depender "/root/catkin_ws/build/lidar_imu_init/CMakeFiles/geometry_msgs_generate_messages_py.dir/depend.internal".
+#79 8.609 Dependee "/root/catkin_ws/build/lidar_imu_init/CMakeFiles/CMakeDirectoryInformation.cmake" is newer than depender "/root/catkin_ws/build/lidar_imu_init/CMakeFiles/geometry_msgs_generate_messages_cpp.dir/depend.internal".
+#79 8.609 Scanning dependencies of target geometry_msgs_generate_messages_py
+#79 8.609 Scanning dependencies of target geometry_msgs_generate_messages_cpp
+#79 8.609 Dependee "/root/catkin_ws/build/lidar_imu_init/CMakeFiles/CMakeDirectoryInformation.cmake" is newer than depender "/root/catkin_ws/build/lidar_imu_init/CMakeFiles/geometry_msgs_generate_messages_nodejs.dir/depend.internal".
+#79 8.609 Scanning dependencies of target geometry_msgs_generate_messages_nodejs
+#79 8.609 make[2]: Leaving directory '/root/catkin_ws/build/lidar_imu_init'
+#79 8.609 make[2]: Leaving directory '/root/catkin_ws/build/lidar_imu_init'
+#79 8.609 make[2]: Leaving directory '/root/catkin_ws/build/lidar_imu_init'
+#79 8.609 /usr/bin/make -f CMakeFiles/geometry_msgs_generate_messages_py.dir/build.make CMakeFiles/geometry_msgs_generate_messages_py.dir/build
+#79 8.609 /usr/bin/make -f CMakeFiles/geometry_msgs_generate_messages_nodejs.dir/build.make CMakeFiles/geometry_msgs_generate_messages_nodejs.dir/build
+#79 8.609 /usr/bin/make -f CMakeFiles/geometry_msgs_generate_messages_cpp.dir/build.make CMakeFiles/geometry_msgs_generate_messages_cpp.dir/build
+#79 8.609 make[2]: Entering directory '/root/catkin_ws/build/lidar_imu_init'
+#79 8.609 make[2]: Nothing to be done for 'CMakeFiles/geometry_msgs_generate_messages_py.dir/build'.
+#79 8.609 make[2]: Leaving directory '/root/catkin_ws/build/lidar_imu_init'
+#79 8.609 make[2]: Entering directory '/root/catkin_ws/build/lidar_imu_init'
+#79 8.609 make[2]: Nothing to be done for 'CMakeFiles/geometry_msgs_generate_messages_nodejs.dir/build'.
+#79 8.609 make[2]: Leaving directory '/root/catkin_ws/build/lidar_imu_init'
+#79 8.609 make[2]: Entering directory '/root/catkin_ws/build/lidar_imu_init'
+#79 8.609 make[2]: Nothing to be done for 'CMakeFiles/geometry_msgs_generate_messages_cpp.dir/build'.
+#79 8.609 make[2]: Leaving directory '/root/catkin_ws/build/lidar_imu_init'
+#79 8.609 Dependee "/root/catkin_ws/build/lidar_imu_init/CMakeFiles/_lidar_imu_init_generate_messages_check_deps_Pose6D.dir/DependInfo.cmake" is newer than depender "/root/catkin_ws/build/lidar_imu_init/CMakeFiles/_lidar_imu_init_generate_messages_check_deps_Pose6D.dir/depend.internal".
+#79 8.609 Dependee "/root/catkin_ws/build/lidar_imu_init/CMakeFiles/CMakeDirectoryInformation.cmake" is newer than depender "/root/catkin_ws/build/lidar_imu_init/CMakeFiles/_lidar_imu_init_generate_messages_check_deps_Pose6D.dir/depend.internal".
+#79 8.609 Scanning dependencies of target _lidar_imu_init_generate_messages_check_deps_Pose6D
+#79 8.609 Dependee "/root/catkin_ws/build/lidar_imu_init/CMakeFiles/geometry_msgs_generate_messages_eus.dir/DependInfo.cmake" is newer than depender "/root/catkin_ws/build/lidar_imu_init/CMakeFiles/geometry_msgs_generate_messages_eus.dir/depend.internal".
+#79 8.609 Dependee "/root/catkin_ws/build/lidar_imu_init/CMakeFiles/_lidar_imu_init_generate_messages_check_deps_States.dir/DependInfo.cmake" is newer than depender "/root/catkin_ws/build/lidar_imu_init/CMakeFiles/_lidar_imu_init_generate_messages_check_deps_States.dir/depend.internal".
+#79 8.609 Dependee "/root/catkin_ws/build/lidar_imu_init/CMakeFiles/CMakeDirectoryInformation.cmake" is newer than depender "/root/catkin_ws/build/lidar_imu_init/CMakeFiles/geometry_msgs_generate_messages_eus.dir/depend.internal".
+#79 8.609 Dependee "/root/catkin_ws/build/lidar_imu_init/CMakeFiles/CMakeDirectoryInformation.cmake" is newer than depender "/root/catkin_ws/build/lidar_imu_init/CMakeFiles/_lidar_imu_init_generate_messages_check_deps_States.dir/depend.internal".
+#79 8.609 Scanning dependencies of target geometry_msgs_generate_messages_eus
+#79 8.609 Scanning dependencies of target _lidar_imu_init_generate_messages_check_deps_States
+#79 8.609 Dependee "/root/catkin_ws/build/lidar_imu_init/CMakeFiles/geometry_msgs_generate_messages_lisp.dir/DependInfo.cmake" is newer than depender "/root/catkin_ws/build/lidar_imu_init/CMakeFiles/geometry_msgs_generate_messages_lisp.dir/depend.internal".
+#79 8.609 Dependee "/root/catkin_ws/build/lidar_imu_init/CMakeFiles/CMakeDirectoryInformation.cmake" is newer than depender "/root/catkin_ws/build/lidar_imu_init/CMakeFiles/geometry_msgs_generate_messages_lisp.dir/depend.internal".
+#79 8.609 Scanning dependencies of target geometry_msgs_generate_messages_lisp
+#79 8.609 make[2]: Leaving directory '/root/catkin_ws/build/lidar_imu_init'
+#79 8.609 make[2]: Leaving directory '/root/catkin_ws/build/lidar_imu_init'
+#79 8.609 /usr/bin/make -f CMakeFiles/_lidar_imu_init_generate_messages_check_deps_States.dir/build.make CMakeFiles/_lidar_imu_init_generate_messages_check_deps_States.dir/build
+#79 8.609 make[2]: Leaving directory '/root/catkin_ws/build/lidar_imu_init'
+#79 8.609 make[2]: Leaving directory '/root/catkin_ws/build/lidar_imu_init'
+#79 8.609 /usr/bin/make -f CMakeFiles/_lidar_imu_init_generate_messages_check_deps_Pose6D.dir/build.make CMakeFiles/_lidar_imu_init_generate_messages_check_deps_Pose6D.dir/build
+#79 8.609 /usr/bin/make -f CMakeFiles/geometry_msgs_generate_messages_eus.dir/build.make CMakeFiles/geometry_msgs_generate_messages_eus.dir/build
+#79 8.609 /usr/bin/make -f CMakeFiles/geometry_msgs_generate_messages_lisp.dir/build.make CMakeFiles/geometry_msgs_generate_messages_lisp.dir/build
+#79 8.609 make[2]: Entering directory '/root/catkin_ws/build/lidar_imu_init'
+#79 8.609 catkin_generated/env_cached.sh /usr/bin/python3 /opt/ros/noetic/share/genmsg/cmake/../../../lib/genmsg/genmsg_check_deps.py lidar_imu_init /root/catkin_ws/src/mdpcalib/FAST_LO/msg/Pose6D.msg 
+#79 8.609 make[2]: Entering directory '/root/catkin_ws/build/lidar_imu_init'
+#79 8.609 make[2]: Nothing to be done for 'CMakeFiles/geometry_msgs_generate_messages_lisp.dir/build'.
+#79 8.609 make[2]: Leaving directory '/root/catkin_ws/build/lidar_imu_init'
+#79 8.609 make[2]: Entering directory '/root/catkin_ws/build/lidar_imu_init'
+#79 8.609 catkin_generated/env_cached.sh /usr/bin/python3 /opt/ros/noetic/share/genmsg/cmake/../../../lib/genmsg/genmsg_check_deps.py lidar_imu_init /root/catkin_ws/src/mdpcalib/FAST_LO/msg/States.msg std_msgs/Header
+#79 8.609 make[2]: Entering directory '/root/catkin_ws/build/lidar_imu_init'
+#79 8.609 make[2]: Nothing to be done for 'CMakeFiles/geometry_msgs_generate_messages_eus.dir/build'.
+#79 8.609 make[2]: Leaving directory '/root/catkin_ws/build/lidar_imu_init'
+#79 8.609 [  0%] Built target geometry_msgs_generate_messages_cpp
+#79 8.609 [  0%] Built target geometry_msgs_generate_messages_py
+#79 8.609 [  0%] Built target geometry_msgs_generate_messages_nodejs
+#79 8.609 [  0%] Built target geometry_msgs_generate_messages_lisp
+#79 8.609 [  0%] Built target geometry_msgs_generate_messages_eus
+#79 8.609 make[2]: Leaving directory '/root/catkin_ws/build/lidar_imu_init'
+#79 8.609 make[2]: Leaving directory '/root/catkin_ws/build/lidar_imu_init'
+#79 8.609 [  0%] Built target _lidar_imu_init_generate_messages_check_deps_Pose6D
+#79 8.609 [  0%] Built target _lidar_imu_init_generate_messages_check_deps_States
+#79 8.609 /usr/bin/make -f CMakeFiles/lidar_imu_init_generate_messages_py.dir/build.make CMakeFiles/lidar_imu_init_generate_messages_py.dir/depend
+#79 8.609 /usr/bin/make -f CMakeFiles/lidar_imu_init_generate_messages_nodejs.dir/build.make CMakeFiles/lidar_imu_init_generate_messages_nodejs.dir/depend
+#79 8.609 /usr/bin/make -f CMakeFiles/lidar_imu_init_generate_messages_eus.dir/build.make CMakeFiles/lidar_imu_init_generate_messages_eus.dir/depend
+#79 8.609 /usr/bin/make -f CMakeFiles/lidar_imu_init_generate_messages_lisp.dir/build.make CMakeFiles/lidar_imu_init_generate_messages_lisp.dir/depend
+#79 8.609 /usr/bin/make -f CMakeFiles/lidar_imu_init_generate_messages_cpp.dir/build.make CMakeFiles/lidar_imu_init_generate_messages_cpp.dir/depend
+#79 8.609 make[2]: Entering directory '/root/catkin_ws/build/lidar_imu_init'
+#79 8.609 cd /root/catkin_ws/build/lidar_imu_init && /usr/bin/cmake -E cmake_depends "Unix Makefiles" /root/catkin_ws/src/mdpcalib/FAST_LO /root/catkin_ws/src/mdpcalib/FAST_LO /root/catkin_ws/build/lidar_imu_init /root/catkin_ws/build/lidar_imu_init /root/catkin_ws/build/lidar_imu_init/CMakeFiles/lidar_imu_init_generate_messages_py.dir/DependInfo.cmake --color=
+#79 8.609 make[2]: Entering directory '/root/catkin_ws/build/lidar_imu_init'
+#79 8.609 make[2]: Entering directory '/root/catkin_ws/build/lidar_imu_init'
+#79 8.609 cd /root/catkin_ws/build/lidar_imu_init && /usr/bin/cmake -E cmake_depends "Unix Makefiles" /root/catkin_ws/src/mdpcalib/FAST_LO /root/catkin_ws/src/mdpcalib/FAST_LO /root/catkin_ws/build/lidar_imu_init /root/catkin_ws/build/lidar_imu_init /root/catkin_ws/build/lidar_imu_init/CMakeFiles/lidar_imu_init_generate_messages_nodejs.dir/DependInfo.cmake --color=
+#79 8.609 cd /root/catkin_ws/build/lidar_imu_init && /usr/bin/cmake -E cmake_depends "Unix Makefiles" /root/catkin_ws/src/mdpcalib/FAST_LO /root/catkin_ws/src/mdpcalib/FAST_LO /root/catkin_ws/build/lidar_imu_init /root/catkin_ws/build/lidar_imu_init /root/catkin_ws/build/lidar_imu_init/CMakeFiles/lidar_imu_init_generate_messages_cpp.dir/DependInfo.cmake --color=
+#79 8.609 make[2]: Entering directory '/root/catkin_ws/build/lidar_imu_init'
+#79 8.609 cd /root/catkin_ws/build/lidar_imu_init && /usr/bin/cmake -E cmake_depends "Unix Makefiles" /root/catkin_ws/src/mdpcalib/FAST_LO /root/catkin_ws/src/mdpcalib/FAST_LO /root/catkin_ws/build/lidar_imu_init /root/catkin_ws/build/lidar_imu_init /root/catkin_ws/build/lidar_imu_init/CMakeFiles/lidar_imu_init_generate_messages_eus.dir/DependInfo.cmake --color=
+#79 8.609 make[2]: Entering directory '/root/catkin_ws/build/lidar_imu_init'
+#79 8.609 cd /root/catkin_ws/build/lidar_imu_init && /usr/bin/cmake -E cmake_depends "Unix Makefiles" /root/catkin_ws/src/mdpcalib/FAST_LO /root/catkin_ws/src/mdpcalib/FAST_LO /root/catkin_ws/build/lidar_imu_init /root/catkin_ws/build/lidar_imu_init /root/catkin_ws/build/lidar_imu_init/CMakeFiles/lidar_imu_init_generate_messages_lisp.dir/DependInfo.cmake --color=
+#79 8.609 Dependee "/root/catkin_ws/build/lidar_imu_init/CMakeFiles/lidar_imu_init_generate_messages_cpp.dir/DependInfo.cmake" is newer than depender "/root/catkin_ws/build/lidar_imu_init/CMakeFiles/lidar_imu_init_generate_messages_cpp.dir/depend.internal".
+#79 8.609 Dependee "/root/catkin_ws/build/lidar_imu_init/CMakeFiles/CMakeDirectoryInformation.cmake" is newer than depender "/root/catkin_ws/build/lidar_imu_init/CMakeFiles/lidar_imu_init_generate_messages_cpp.dir/depend.internal".
+#79 8.609 Scanning dependencies of target lidar_imu_init_generate_messages_cpp
+#79 8.609 make[2]: Leaving directory '/root/catkin_ws/build/lidar_imu_init'
+#79 8.609 Dependee "/root/catkin_ws/build/lidar_imu_init/CMakeFiles/lidar_imu_init_generate_messages_nodejs.dir/DependInfo.cmake" is newer than depender "/root/catkin_ws/build/lidar_imu_init/CMakeFiles/lidar_imu_init_generate_messages_nodejs.dir/depend.internal".
+#79 8.609 Dependee "/root/catkin_ws/build/lidar_imu_init/CMakeFiles/CMakeDirectoryInformation.cmake" is newer than depender "/root/catkin_ws/build/lidar_imu_init/CMakeFiles/lidar_imu_init_generate_messages_nodejs.dir/depend.internal".
+#79 8.609 Scanning dependencies of target lidar_imu_init_generate_messages_nodejs
+#79 8.609 /usr/bin/make -f CMakeFiles/lidar_imu_init_generate_messages_cpp.dir/build.make CMakeFiles/lidar_imu_init_generate_messages_cpp.dir/build
+#79 8.609 make[2]: Leaving directory '/root/catkin_ws/build/lidar_imu_init'
+#79 8.609 /usr/bin/make -f CMakeFiles/lidar_imu_init_generate_messages_nodejs.dir/build.make CMakeFiles/lidar_imu_init_generate_messages_nodejs.dir/build
+#79 8.609 make[2]: Entering directory '/root/catkin_ws/build/lidar_imu_init'
+#79 8.609 make[2]: Entering directory '/root/catkin_ws/build/lidar_imu_init'
+#79 8.609 Dependee "/root/catkin_ws/build/lidar_imu_init/CMakeFiles/lidar_imu_init_generate_messages_eus.dir/DependInfo.cmake" is newer than depender "/root/catkin_ws/build/lidar_imu_init/CMakeFiles/lidar_imu_init_generate_messages_eus.dir/depend.internal".
+#79 8.609 Dependee "/root/catkin_ws/build/lidar_imu_init/CMakeFiles/lidar_imu_init_generate_messages_py.dir/DependInfo.cmake" is newer than depender "/root/catkin_ws/build/lidar_imu_init/CMakeFiles/lidar_imu_init_generate_messages_py.dir/depend.internal".
+#79 8.609 Dependee "/root/catkin_ws/build/lidar_imu_init/CMakeFiles/CMakeDirectoryInformation.cmake" is newer than depender "/root/catkin_ws/build/lidar_imu_init/CMakeFiles/lidar_imu_init_generate_messages_eus.dir/depend.internal".
+#79 8.609 Dependee "/root/catkin_ws/build/lidar_imu_init/CMakeFiles/CMakeDirectoryInformation.cmake" is newer than depender "/root/catkin_ws/build/lidar_imu_init/CMakeFiles/lidar_imu_init_generate_messages_py.dir/depend.internal".
+#79 8.609 Scanning dependencies of target lidar_imu_init_generate_messages_eus
+#79 8.609 Scanning dependencies of target lidar_imu_init_generate_messages_py
+#79 8.609 Dependee "/root/catkin_ws/build/lidar_imu_init/CMakeFiles/lidar_imu_init_generate_messages_lisp.dir/DependInfo.cmake" is newer than depender "/root/catkin_ws/build/lidar_imu_init/CMakeFiles/lidar_imu_init_generate_messages_lisp.dir/depend.internal".
+#79 8.609 Dependee "/root/catkin_ws/build/lidar_imu_init/CMakeFiles/CMakeDirectoryInformation.cmake" is newer than depender "/root/catkin_ws/build/lidar_imu_init/CMakeFiles/lidar_imu_init_generate_messages_lisp.dir/depend.internal".
+#79 8.609 Scanning dependencies of target lidar_imu_init_generate_messages_lisp
+#79 8.609 make[2]: Leaving directory '/root/catkin_ws/build/lidar_imu_init'
+#79 8.609 make[2]: Leaving directory '/root/catkin_ws/build/lidar_imu_init'
+#79 8.609 make[2]: Leaving directory '/root/catkin_ws/build/lidar_imu_init'
+#79 8.609 /usr/bin/make -f CMakeFiles/lidar_imu_init_generate_messages_py.dir/build.make CMakeFiles/lidar_imu_init_generate_messages_py.dir/build
+#79 8.609 /usr/bin/make -f CMakeFiles/lidar_imu_init_generate_messages_eus.dir/build.make CMakeFiles/lidar_imu_init_generate_messages_eus.dir/build
+#79 8.609 /usr/bin/make -f CMakeFiles/lidar_imu_init_generate_messages_lisp.dir/build.make CMakeFiles/lidar_imu_init_generate_messages_lisp.dir/build
+#79 8.609 make[2]: Entering directory '/root/catkin_ws/build/lidar_imu_init'
+#79 8.609 make[2]: Entering directory '/root/catkin_ws/build/lidar_imu_init'
+#79 8.609 make[2]: Entering directory '/root/catkin_ws/build/lidar_imu_init'
+#79 8.609 [  4%] Generating C++ code from lidar_imu_init/Pose6D.msg
+#79 8.609 [ 13%] Generating Javascript code from lidar_imu_init/States.msg
+#79 8.609 [ 13%] Generating Javascript code from lidar_imu_init/Pose6D.msg
+#79 8.609 cd /root/catkin_ws/src/mdpcalib/FAST_LO && /root/catkin_ws/build/lidar_imu_init/catkin_generated/env_cached.sh /usr/bin/python3 /opt/ros/noetic/share/gencpp/cmake/../../../lib/gencpp/gen_cpp.py /root/catkin_ws/src/mdpcalib/FAST_LO/msg/Pose6D.msg -Ilidar_imu_init:/root/catkin_ws/src/mdpcalib/FAST_LO/msg -Igeometry_msgs:/opt/ros/noetic/share/geometry_msgs/cmake/../msg -Istd_msgs:/opt/ros/noetic/share/std_msgs/cmake/../msg -p lidar_imu_init -o /root/catkin_ws/devel/.private/lidar_imu_init/include/lidar_imu_init -e /opt/ros/noetic/share/gencpp/cmake/..
+#79 8.609 catkin_generated/env_cached.sh /usr/bin/python3 /opt/ros/noetic/share/gennodejs/cmake/../../../lib/gennodejs/gen_nodejs.py /root/catkin_ws/src/mdpcalib/FAST_LO/msg/States.msg -Ilidar_imu_init:/root/catkin_ws/src/mdpcalib/FAST_LO/msg -Igeometry_msgs:/opt/ros/noetic/share/geometry_msgs/cmake/../msg -Istd_msgs:/opt/ros/noetic/share/std_msgs/cmake/../msg -p lidar_imu_init -o /root/catkin_ws/devel/.private/lidar_imu_init/share/gennodejs/ros/lidar_imu_init/msg
+#79 8.609 catkin_generated/env_cached.sh /usr/bin/python3 /opt/ros/noetic/share/gennodejs/cmake/../../../lib/gennodejs/gen_nodejs.py /root/catkin_ws/src/mdpcalib/FAST_LO/msg/Pose6D.msg -Ilidar_imu_init:/root/catkin_ws/src/mdpcalib/FAST_LO/msg -Igeometry_msgs:/opt/ros/noetic/share/geometry_msgs/cmake/../msg -Istd_msgs:/opt/ros/noetic/share/std_msgs/cmake/../msg -p lidar_imu_init -o /root/catkin_ws/devel/.private/lidar_imu_init/share/gennodejs/ros/lidar_imu_init/msg
+#79 8.609 [ 18%] Generating C++ code from lidar_imu_init/States.msg
+#79 8.609 cd /root/catkin_ws/src/mdpcalib/FAST_LO && /root/catkin_ws/build/lidar_imu_init/catkin_generated/env_cached.sh /usr/bin/python3 /opt/ros/noetic/share/gencpp/cmake/../../../lib/gencpp/gen_cpp.py /root/catkin_ws/src/mdpcalib/FAST_LO/msg/States.msg -Ilidar_imu_init:/root/catkin_ws/src/mdpcalib/FAST_LO/msg -Igeometry_msgs:/opt/ros/noetic/share/geometry_msgs/cmake/../msg -Istd_msgs:/opt/ros/noetic/share/std_msgs/cmake/../msg -p lidar_imu_init -o /root/catkin_ws/devel/.private/lidar_imu_init/include/lidar_imu_init -e /opt/ros/noetic/share/gencpp/cmake/..
+#79 8.609 [ 22%] Generating EusLisp code from lidar_imu_init/Pose6D.msg
+#79 8.609 [ 27%] Generating Lisp code from lidar_imu_init/States.msg
+#79 8.609 catkin_generated/env_cached.sh /usr/bin/python3 /opt/ros/noetic/share/geneus/cmake/../../../lib/geneus/gen_eus.py /root/catkin_ws/src/mdpcalib/FAST_LO/msg/Pose6D.msg -Ilidar_imu_init:/root/catkin_ws/src/mdpcalib/FAST_LO/msg -Igeometry_msgs:/opt/ros/noetic/share/geometry_msgs/cmake/../msg -Istd_msgs:/opt/ros/noetic/share/std_msgs/cmake/../msg -p lidar_imu_init -o /root/catkin_ws/devel/.private/lidar_imu_init/share/roseus/ros/lidar_imu_init/msg
+#79 8.609 catkin_generated/env_cached.sh /usr/bin/python3 /opt/ros/noetic/share/genlisp/cmake/../../../lib/genlisp/gen_lisp.py /root/catkin_ws/src/mdpcalib/FAST_LO/msg/States.msg -Ilidar_imu_init:/root/catkin_ws/src/mdpcalib/FAST_LO/msg -Igeometry_msgs:/opt/ros/noetic/share/geometry_msgs/cmake/../msg -Istd_msgs:/opt/ros/noetic/share/std_msgs/cmake/../msg -p lidar_imu_init -o /root/catkin_ws/devel/.private/lidar_imu_init/share/common-lisp/ros/lidar_imu_init/msg
+#79 8.609 [ 50%] Generating EusLisp code from lidar_imu_init/States.msg
+#79 8.609 [ 50%] Generating Lisp code from lidar_imu_init/Pose6D.msg
+#79 8.609 [ 50%] Generating Python from MSG lidar_imu_init/Pose6D
+#79 8.609 [ 50%] Generating EusLisp manifest code for lidar_imu_init
+#79 8.609 [ 50%] Generating Python from MSG lidar_imu_init/States
+#79 8.609 catkin_generated/env_cached.sh /usr/bin/python3 /opt/ros/noetic/share/geneus/cmake/../../../lib/geneus/gen_eus.py /root/catkin_ws/src/mdpcalib/FAST_LO/msg/States.msg -Ilidar_imu_init:/root/catkin_ws/src/mdpcalib/FAST_LO/msg -Igeometry_msgs:/opt/ros/noetic/share/geometry_msgs/cmake/../msg -Istd_msgs:/opt/ros/noetic/share/std_msgs/cmake/../msg -p lidar_imu_init -o /root/catkin_ws/devel/.private/lidar_imu_init/share/roseus/ros/lidar_imu_init/msg
+#79 8.609 catkin_generated/env_cached.sh /usr/bin/python3 /opt/ros/noetic/share/genlisp/cmake/../../../lib/genlisp/gen_lisp.py /root/catkin_ws/src/mdpcalib/FAST_LO/msg/Pose6D.msg -Ilidar_imu_init:/root/catkin_ws/src/mdpcalib/FAST_LO/msg -Igeometry_msgs:/opt/ros/noetic/share/geometry_msgs/cmake/../msg -Istd_msgs:/opt/ros/noetic/share/std_msgs/cmake/../msg -p lidar_imu_init -o /root/catkin_ws/devel/.private/lidar_imu_init/share/common-lisp/ros/lidar_imu_init/msg
+#79 8.609 catkin_generated/env_cached.sh /usr/bin/python3 /opt/ros/noetic/share/genpy/cmake/../../../lib/genpy/genmsg_py.py /root/catkin_ws/src/mdpcalib/FAST_LO/msg/Pose6D.msg -Ilidar_imu_init:/root/catkin_ws/src/mdpcalib/FAST_LO/msg -Igeometry_msgs:/opt/ros/noetic/share/geometry_msgs/cmake/../msg -Istd_msgs:/opt/ros/noetic/share/std_msgs/cmake/../msg -p lidar_imu_init -o /root/catkin_ws/devel/.private/lidar_imu_init/lib/python3/dist-packages/lidar_imu_init/msg
+#79 8.609 catkin_generated/env_cached.sh /usr/bin/python3 /opt/ros/noetic/share/genpy/cmake/../../../lib/genpy/genmsg_py.py /root/catkin_ws/src/mdpcalib/FAST_LO/msg/States.msg -Ilidar_imu_init:/root/catkin_ws/src/mdpcalib/FAST_LO/msg -Igeometry_msgs:/opt/ros/noetic/share/geometry_msgs/cmake/../msg -Istd_msgs:/opt/ros/noetic/share/std_msgs/cmake/../msg -p lidar_imu_init -o /root/catkin_ws/devel/.private/lidar_imu_init/lib/python3/dist-packages/lidar_imu_init/msg
+#79 8.609 catkin_generated/env_cached.sh /usr/bin/python3 /opt/ros/noetic/share/geneus/cmake/../../../lib/geneus/gen_eus.py -m -o /root/catkin_ws/devel/.private/lidar_imu_init/share/roseus/ros/lidar_imu_init lidar_imu_init geometry_msgs
+#79 8.609 make[2]: Leaving directory '/root/catkin_ws/build/lidar_imu_init'
+#79 8.609 make[2]: Leaving directory '/root/catkin_ws/build/lidar_imu_init'
+#79 8.609 [ 50%] Built target lidar_imu_init_generate_messages_nodejs
+#79 8.609 [ 50%] Built target lidar_imu_init_generate_messages_lisp
+#79 8.609 make[2]: Leaving directory '/root/catkin_ws/build/lidar_imu_init'
+#79 8.609 [ 50%] Built target lidar_imu_init_generate_messages_cpp
+#79 8.609 [ 54%] Generating Python msg __init__.py for lidar_imu_init
+#79 8.609 catkin_generated/env_cached.sh /usr/bin/python3 /opt/ros/noetic/share/genpy/cmake/../../../lib/genpy/genmsg_py.py -o /root/catkin_ws/devel/.private/lidar_imu_init/lib/python3/dist-packages/lidar_imu_init/msg --initpy
+#79 8.609 make[2]: Leaving directory '/root/catkin_ws/build/lidar_imu_init'
+#79 8.609 make[2]: Leaving directory '/root/catkin_ws/build/lidar_imu_init'
+#79 8.609 [ 54%] Built target lidar_imu_init_generate_messages_eus
+#79 8.609 [ 54%] Built target lidar_imu_init_generate_messages_py
+#79 8.609 /usr/bin/make -f CMakeFiles/lidar_imu_init_generate_messages.dir/build.make CMakeFiles/lidar_imu_init_generate_messages.dir/depend
+#79 8.609 make[2]: Entering directory '/root/catkin_ws/build/lidar_imu_init'
+#79 8.609 cd /root/catkin_ws/build/lidar_imu_init && /usr/bin/cmake -E cmake_depends "Unix Makefiles" /root/catkin_ws/src/mdpcalib/FAST_LO /root/catkin_ws/src/mdpcalib/FAST_LO /root/catkin_ws/build/lidar_imu_init /root/catkin_ws/build/lidar_imu_init /root/catkin_ws/build/lidar_imu_init/CMakeFiles/lidar_imu_init_generate_messages.dir/DependInfo.cmake --color=
+#79 8.609 Dependee "/root/catkin_ws/build/lidar_imu_init/CMakeFiles/lidar_imu_init_generate_messages.dir/DependInfo.cmake" is newer than depender "/root/catkin_ws/build/lidar_imu_init/CMakeFiles/lidar_imu_init_generate_messages.dir/depend.internal".
+#79 8.609 Dependee "/root/catkin_ws/build/lidar_imu_init/CMakeFiles/CMakeDirectoryInformation.cmake" is newer than depender "/root/catkin_ws/build/lidar_imu_init/CMakeFiles/lidar_imu_init_generate_messages.dir/depend.internal".
+#79 8.609 Scanning dependencies of target lidar_imu_init_generate_messages
+#79 8.609 make[2]: Leaving directory '/root/catkin_ws/build/lidar_imu_init'
+#79 8.609 /usr/bin/make -f CMakeFiles/lidar_imu_init_generate_messages.dir/build.make CMakeFiles/lidar_imu_init_generate_messages.dir/build
+#79 8.609 make[2]: Entering directory '/root/catkin_ws/build/lidar_imu_init'
+#79 8.609 make[2]: Nothing to be done for 'CMakeFiles/lidar_imu_init_generate_messages.dir/build'.
+#79 8.609 make[2]: Leaving directory '/root/catkin_ws/build/lidar_imu_init'
+#79 8.609 [ 54%] Built target lidar_imu_init_generate_messages
+#79 8.609 /usr/bin/make -f CMakeFiles/li_init.dir/build.make CMakeFiles/li_init.dir/depend
+#79 8.609 /usr/bin/make -f CMakeFiles/fast_lo.dir/build.make CMakeFiles/fast_lo.dir/depend
+#79 8.609 make[2]: Entering directory '/root/catkin_ws/build/lidar_imu_init'
+#79 8.609 cd /root/catkin_ws/build/lidar_imu_init && /usr/bin/cmake -E cmake_depends "Unix Makefiles" /root/catkin_ws/src/mdpcalib/FAST_LO /root/catkin_ws/src/mdpcalib/FAST_LO /root/catkin_ws/build/lidar_imu_init /root/catkin_ws/build/lidar_imu_init /root/catkin_ws/build/lidar_imu_init/CMakeFiles/li_init.dir/DependInfo.cmake --color=
+#79 8.609 make[2]: Entering directory '/root/catkin_ws/build/lidar_imu_init'
+#79 8.609 cd /root/catkin_ws/build/lidar_imu_init && /usr/bin/cmake -E cmake_depends "Unix Makefiles" /root/catkin_ws/src/mdpcalib/FAST_LO /root/catkin_ws/src/mdpcalib/FAST_LO /root/catkin_ws/build/lidar_imu_init /root/catkin_ws/build/lidar_imu_init /root/catkin_ws/build/lidar_imu_init/CMakeFiles/fast_lo.dir/DependInfo.cmake --color=
+#79 8.609 Dependee "/root/catkin_ws/build/lidar_imu_init/CMakeFiles/fast_lo.dir/DependInfo.cmake" is newer than depender "/root/catkin_ws/build/lidar_imu_init/CMakeFiles/fast_lo.dir/depend.internal".
+#79 8.609 Dependee "/root/catkin_ws/build/lidar_imu_init/CMakeFiles/li_init.dir/DependInfo.cmake" is newer than depender "/root/catkin_ws/build/lidar_imu_init/CMakeFiles/li_init.dir/depend.internal".
+#79 8.609 Dependee "/root/catkin_ws/build/lidar_imu_init/CMakeFiles/CMakeDirectoryInformation.cmake" is newer than depender "/root/catkin_ws/build/lidar_imu_init/CMakeFiles/fast_lo.dir/depend.internal".
+#79 8.609 Scanning dependencies of target fast_lo
+#79 8.609 Dependee "/root/catkin_ws/build/lidar_imu_init/CMakeFiles/CMakeDirectoryInformation.cmake" is newer than depender "/root/catkin_ws/build/lidar_imu_init/CMakeFiles/li_init.dir/depend.internal".
+#79 8.609 Scanning dependencies of target li_init
+#79 8.609 make[2]: Leaving directory '/root/catkin_ws/build/lidar_imu_init'
+#79 8.609 make[2]: Leaving directory '/root/catkin_ws/build/lidar_imu_init'
+#79 8.609 /usr/bin/make -f CMakeFiles/li_init.dir/build.make CMakeFiles/li_init.dir/build
+#79 8.609 /usr/bin/make -f CMakeFiles/fast_lo.dir/build.make CMakeFiles/fast_lo.dir/build
+#79 8.609 make[2]: Entering directory '/root/catkin_ws/build/lidar_imu_init'
+#79 8.609 make[2]: Entering directory '/root/catkin_ws/build/lidar_imu_init'
+#79 8.609 [ 72%] Building CXX object CMakeFiles/fast_lo.dir/src/FAST_LO.cpp.o
+#79 8.609 [ 72%] Building CXX object CMakeFiles/li_init.dir/src/laserMapping.cpp.o
+#79 8.609 [ 72%] Building CXX object CMakeFiles/fast_lo.dir/include/LI_init/LI_init.cpp.o
+#79 8.609 [ 72%] Building CXX object CMakeFiles/fast_lo.dir/src/preprocess.cpp.o
+#79 8.609 /usr/bin/c++  -DDISABLE_LIBUSB_1_0 -DDISABLE_OPENNI -DDISABLE_OPENNI2 -DDISABLE_PCAP -DDISABLE_PNG -DGFLAGS_IS_A_DLL=0 -DMP_EN -DMP_PROC_NUM=3 -DROOT_DIR=\"/root/catkin_ws/src/mdpcalib/FAST_LO/\" -DROSCONSOLE_BACKEND_LOG4CXX -DROS_BUILD_SHARED_LIBS=1 -DROS_PACKAGE_NAME=\"lidar_imu_init\" -Dqh_QHpointer -DvtkRenderingContext2D_AUTOINIT="1(vtkRenderingContextOpenGL2)" -DvtkRenderingCore_AUTOINIT="3(vtkInteractionStyle,vtkRenderingFreeType,vtkRenderingOpenGL2)" -I/root/catkin_ws/devel/.private/lidar_imu_init/include -I/root/catkin_ws/src/mdpcalib/FAST_LO/../../devel/include -I/opt/ros/noetic/include -I/opt/ros/noetic/share/xmlrpcpp/cmake/../../../include/xmlrpcpp -I/usr/include/python3.8 -I/root/catkin_ws/src/mdpcalib/FAST_LO/include -isystem /usr/include/vtk-7.1 -isystem /usr/include/freetype2 -isystem /usr/include/eigen3 -isystem /usr/include/pcl-1.10  -std=c++14 -O3 -std=c++14 -pthread -std=c++0x -std=c++14 -fexceptions -fopenmp  -O3 -DNDEBUG   -std=c++14 -std=c++14 -o CMakeFiles/fast_lo.dir/src/preprocess.cpp.o -c /root/catkin_ws/src/mdpcalib/FAST_LO/src/preprocess.cpp
+#79 8.609 /usr/bin/c++  -DDISABLE_LIBUSB_1_0 -DDISABLE_OPENNI -DDISABLE_OPENNI2 -DDISABLE_PCAP -DDISABLE_PNG -DGFLAGS_IS_A_DLL=0 -DMP_EN -DMP_PROC_NUM=3 -DROOT_DIR=\"/root/catkin_ws/src/mdpcalib/FAST_LO/\" -DROSCONSOLE_BACKEND_LOG4CXX -DROS_BUILD_SHARED_LIBS=1 -DROS_PACKAGE_NAME=\"lidar_imu_init\" -Dqh_QHpointer -DvtkRenderingContext2D_AUTOINIT="1(vtkRenderingContextOpenGL2)" -DvtkRenderingCore_AUTOINIT="3(vtkInteractionStyle,vtkRenderingFreeType,vtkRenderingOpenGL2)" -I/root/catkin_ws/devel/.private/lidar_imu_init/include -I/root/catkin_ws/src/mdpcalib/FAST_LO/../../devel/include -I/opt/ros/noetic/include -I/opt/ros/noetic/share/xmlrpcpp/cmake/../../../include/xmlrpcpp -I/usr/include/python3.8 -I/root/catkin_ws/src/mdpcalib/FAST_LO/include -isystem /usr/include/vtk-7.1 -isystem /usr/include/freetype2 -isystem /usr/include/eigen3 -isystem /usr/include/pcl-1.10  -std=c++14 -O3 -std=c++14 -pthread -std=c++0x -std=c++14 -fexceptions -fopenmp  -O3 -DNDEBUG   -std=c++14 -std=c++14 -o CMakeFiles/fast_lo.dir/src/FAST_LO.cpp.o -c /root/catkin_ws/src/mdpcalib/FAST_LO/src/FAST_LO.cpp
+#79 8.609 /usr/bin/c++  -DDISABLE_LIBUSB_1_0 -DDISABLE_OPENNI -DDISABLE_OPENNI2 -DDISABLE_PCAP -DDISABLE_PNG -DGFLAGS_IS_A_DLL=0 -DMP_EN -DMP_PROC_NUM=3 -DROOT_DIR=\"/root/catkin_ws/src/mdpcalib/FAST_LO/\" -DROSCONSOLE_BACKEND_LOG4CXX -DROS_BUILD_SHARED_LIBS=1 -DROS_PACKAGE_NAME=\"lidar_imu_init\" -Dqh_QHpointer -DvtkRenderingContext2D_AUTOINIT="1(vtkRenderingContextOpenGL2)" -DvtkRenderingCore_AUTOINIT="3(vtkInteractionStyle,vtkRenderingFreeType,vtkRenderingOpenGL2)" -I/root/catkin_ws/devel/.private/lidar_imu_init/include -I/root/catkin_ws/src/mdpcalib/FAST_LO/../../devel/include -I/opt/ros/noetic/include -I/opt/ros/noetic/share/xmlrpcpp/cmake/../../../include/xmlrpcpp -I/usr/include/python3.8 -I/root/catkin_ws/src/mdpcalib/FAST_LO/include -isystem /usr/include/vtk-7.1 -isystem /usr/include/freetype2 -isystem /usr/include/eigen3 -isystem /usr/include/pcl-1.10  -std=c++14 -O3 -std=c++14 -pthread -std=c++0x -std=c++14 -fexceptions -fopenmp  -O3 -DNDEBUG   -std=c++14 -std=c++14 -o CMakeFiles/li_init.dir/src/laserMapping.cpp.o -c /root/catkin_ws/src/mdpcalib/FAST_LO/src/laserMapping.cpp
+#79 8.609 /usr/bin/c++  -DDISABLE_LIBUSB_1_0 -DDISABLE_OPENNI -DDISABLE_OPENNI2 -DDISABLE_PCAP -DDISABLE_PNG -DGFLAGS_IS_A_DLL=0 -DMP_EN -DMP_PROC_NUM=3 -DROOT_DIR=\"/root/catkin_ws/src/mdpcalib/FAST_LO/\" -DROSCONSOLE_BACKEND_LOG4CXX -DROS_BUILD_SHARED_LIBS=1 -DROS_PACKAGE_NAME=\"lidar_imu_init\" -Dqh_QHpointer -DvtkRenderingContext2D_AUTOINIT="1(vtkRenderingContextOpenGL2)" -DvtkRenderingCore_AUTOINIT="3(vtkInteractionStyle,vtkRenderingFreeType,vtkRenderingOpenGL2)" -I/root/catkin_ws/devel/.private/lidar_imu_init/include -I/root/catkin_ws/src/mdpcalib/FAST_LO/../../devel/include -I/opt/ros/noetic/include -I/opt/ros/noetic/share/xmlrpcpp/cmake/../../../include/xmlrpcpp -I/usr/include/python3.8 -I/root/catkin_ws/src/mdpcalib/FAST_LO/include -isystem /usr/include/vtk-7.1 -isystem /usr/include/freetype2 -isystem /usr/include/eigen3 -isystem /usr/include/pcl-1.10  -std=c++14 -O3 -std=c++14 -pthread -std=c++0x -std=c++14 -fexceptions -fopenmp  -O3 -DNDEBUG   -std=c++14 -std=c++14 -o CMakeFiles/fast_lo.dir/include/LI_init/LI_init.cpp.o -c /root/catkin_ws/src/mdpcalib/FAST_LO/include/LI_init/LI_init.cpp
+#79 8.609 [ 77%] Building CXX object CMakeFiles/fast_lo.dir/include/ikd-Tree/ikd_Tree.cpp.o
+#79 8.609 [ 81%] Building CXX object CMakeFiles/li_init.dir/include/ikd-Tree/ikd_Tree.cpp.o
+#79 8.609 [ 86%] Building CXX object CMakeFiles/li_init.dir/include/LI_init/LI_init.cpp.o
+#79 8.609 [ 90%] Building CXX object CMakeFiles/li_init.dir/src/preprocess.cpp.o
+#79 8.609 /usr/bin/c++  -DDISABLE_LIBUSB_1_0 -DDISABLE_OPENNI -DDISABLE_OPENNI2 -DDISABLE_PCAP -DDISABLE_PNG -DGFLAGS_IS_A_DLL=0 -DMP_EN -DMP_PROC_NUM=3 -DROOT_DIR=\"/root/catkin_ws/src/mdpcalib/FAST_LO/\" -DROSCONSOLE_BACKEND_LOG4CXX -DROS_BUILD_SHARED_LIBS=1 -DROS_PACKAGE_NAME=\"lidar_imu_init\" -Dqh_QHpointer -DvtkRenderingContext2D_AUTOINIT="1(vtkRenderingContextOpenGL2)" -DvtkRenderingCore_AUTOINIT="3(vtkInteractionStyle,vtkRenderingFreeType,vtkRenderingOpenGL2)" -I/root/catkin_ws/devel/.private/lidar_imu_init/include -I/root/catkin_ws/src/mdpcalib/FAST_LO/../../devel/include -I/opt/ros/noetic/include -I/opt/ros/noetic/share/xmlrpcpp/cmake/../../../include/xmlrpcpp -I/usr/include/python3.8 -I/root/catkin_ws/src/mdpcalib/FAST_LO/include -isystem /usr/include/vtk-7.1 -isystem /usr/include/freetype2 -isystem /usr/include/eigen3 -isystem /usr/include/pcl-1.10  -std=c++14 -O3 -std=c++14 -pthread -std=c++0x -std=c++14 -fexceptions -fopenmp  -O3 -DNDEBUG   -std=c++14 -std=c++14 -o CMakeFiles/fast_lo.dir/include/ikd-Tree/ikd_Tree.cpp.o -c /root/catkin_ws/src/mdpcalib/FAST_LO/include/ikd-Tree/ikd_Tree.cpp
+#79 8.609 /usr/bin/c++  -DDISABLE_LIBUSB_1_0 -DDISABLE_OPENNI -DDISABLE_OPENNI2 -DDISABLE_PCAP -DDISABLE_PNG -DGFLAGS_IS_A_DLL=0 -DMP_EN -DMP_PROC_NUM=3 -DROOT_DIR=\"/root/catkin_ws/src/mdpcalib/FAST_LO/\" -DROSCONSOLE_BACKEND_LOG4CXX -DROS_BUILD_SHARED_LIBS=1 -DROS_PACKAGE_NAME=\"lidar_imu_init\" -Dqh_QHpointer -DvtkRenderingContext2D_AUTOINIT="1(vtkRenderingContextOpenGL2)" -DvtkRenderingCore_AUTOINIT="3(vtkInteractionStyle,vtkRenderingFreeType,vtkRenderingOpenGL2)" -I/root/catkin_ws/devel/.private/lidar_imu_init/include -I/root/catkin_ws/src/mdpcalib/FAST_LO/../../devel/include -I/opt/ros/noetic/include -I/opt/ros/noetic/share/xmlrpcpp/cmake/../../../include/xmlrpcpp -I/usr/include/python3.8 -I/root/catkin_ws/src/mdpcalib/FAST_LO/include -isystem /usr/include/vtk-7.1 -isystem /usr/include/freetype2 -isystem /usr/include/eigen3 -isystem /usr/include/pcl-1.10  -std=c++14 -O3 -std=c++14 -pthread -std=c++0x -std=c++14 -fexceptions -fopenmp  -O3 -DNDEBUG   -std=c++14 -std=c++14 -o CMakeFiles/li_init.dir/include/ikd-Tree/ikd_Tree.cpp.o -c /root/catkin_ws/src/mdpcalib/FAST_LO/include/ikd-Tree/ikd_Tree.cpp
+#79 8.609 /usr/bin/c++  -DDISABLE_LIBUSB_1_0 -DDISABLE_OPENNI -DDISABLE_OPENNI2 -DDISABLE_PCAP -DDISABLE_PNG -DGFLAGS_IS_A_DLL=0 -DMP_EN -DMP_PROC_NUM=3 -DROOT_DIR=\"/root/catkin_ws/src/mdpcalib/FAST_LO/\" -DROSCONSOLE_BACKEND_LOG4CXX -DROS_BUILD_SHARED_LIBS=1 -DROS_PACKAGE_NAME=\"lidar_imu_init\" -Dqh_QHpointer -DvtkRenderingContext2D_AUTOINIT="1(vtkRenderingContextOpenGL2)" -DvtkRenderingCore_AUTOINIT="3(vtkInteractionStyle,vtkRenderingFreeType,vtkRenderingOpenGL2)" -I/root/catkin_ws/devel/.private/lidar_imu_init/include -I/root/catkin_ws/src/mdpcalib/FAST_LO/../../devel/include -I/opt/ros/noetic/include -I/opt/ros/noetic/share/xmlrpcpp/cmake/../../../include/xmlrpcpp -I/usr/include/python3.8 -I/root/catkin_ws/src/mdpcalib/FAST_LO/include -isystem /usr/include/vtk-7.1 -isystem /usr/include/freetype2 -isystem /usr/include/eigen3 -isystem /usr/include/pcl-1.10  -std=c++14 -O3 -std=c++14 -pthread -std=c++0x -std=c++14 -fexceptions -fopenmp  -O3 -DNDEBUG   -std=c++14 -std=c++14 -o CMakeFiles/li_init.dir/include/LI_init/LI_init.cpp.o -c /root/catkin_ws/src/mdpcalib/FAST_LO/include/LI_init/LI_init.cpp
+#79 8.609 /usr/bin/c++  -DDISABLE_LIBUSB_1_0 -DDISABLE_OPENNI -DDISABLE_OPENNI2 -DDISABLE_PCAP -DDISABLE_PNG -DGFLAGS_IS_A_DLL=0 -DMP_EN -DMP_PROC_NUM=3 -DROOT_DIR=\"/root/catkin_ws/src/mdpcalib/FAST_LO/\" -DROSCONSOLE_BACKEND_LOG4CXX -DROS_BUILD_SHARED_LIBS=1 -DROS_PACKAGE_NAME=\"lidar_imu_init\" -Dqh_QHpointer -DvtkRenderingContext2D_AUTOINIT="1(vtkRenderingContextOpenGL2)" -DvtkRenderingCore_AUTOINIT="3(vtkInteractionStyle,vtkRenderingFreeType,vtkRenderingOpenGL2)" -I/root/catkin_ws/devel/.private/lidar_imu_init/include -I/root/catkin_ws/src/mdpcalib/FAST_LO/../../devel/include -I/opt/ros/noetic/include -I/opt/ros/noetic/share/xmlrpcpp/cmake/../../../include/xmlrpcpp -I/usr/include/python3.8 -I/root/catkin_ws/src/mdpcalib/FAST_LO/include -isystem /usr/include/vtk-7.1 -isystem /usr/include/freetype2 -isystem /usr/include/eigen3 -isystem /usr/include/pcl-1.10  -std=c++14 -O3 -std=c++14 -pthread -std=c++0x -std=c++14 -fexceptions -fopenmp  -O3 -DNDEBUG   -std=c++14 -std=c++14 -o CMakeFiles/li_init.dir/src/preprocess.cpp.o -c /root/catkin_ws/src/mdpcalib/FAST_LO/src/preprocess.cpp
+#79 8.609 In file included from /root/catkin_ws/src/mdpcalib/FAST_LO/include/LI_init/LI_init.h:19,
+#79 8.609                  from /root/catkin_ws/src/mdpcalib/FAST_LO/include/LI_init/LI_init.cpp:1:
+#79 8.609 /root/catkin_ws/src/mdpcalib/FAST_LO/include/matplotlibcpp.h:19:10: fatal error: numpy/arrayobject.h: No such file or directory
+#79 8.609    19 | #include <numpy/arrayobject.h>
+#79 8.609       |          ^~~~~~~~~~~~~~~~~~~~~
+#79 8.609 compilation terminated.
+#79 8.609 make[2]: *** [CMakeFiles/fast_lo.dir/build.make:89: CMakeFiles/fast_lo.dir/include/LI_init/LI_init.cpp.o] Error 1
+#79 8.609 make[2]: *** Waiting for unfinished jobs....
+#79 8.609 In file included from /root/catkin_ws/src/mdpcalib/FAST_LO/include/LI_init/LI_init.h:19,
+#79 8.609                  from /root/catkin_ws/src/mdpcalib/FAST_LO/src/FAST_LO.cpp:35:
+#79 8.609 /root/catkin_ws/src/mdpcalib/FAST_LO/include/matplotlibcpp.h:19:10: fatal error: numpy/arrayobject.h: No such file or directory
+#79 8.609    19 | #include <numpy/arrayobject.h>
+#79 8.609       |          ^~~~~~~~~~~~~~~~~~~~~
+#79 8.609 compilation terminated.
+#79 8.609 make[2]: *** [CMakeFiles/fast_lo.dir/build.make:63: CMakeFiles/fast_lo.dir/src/FAST_LO.cpp.o] Error 1
+#79 8.609 In file included from /root/catkin_ws/src/mdpcalib/FAST_LO/include/LI_init/LI_init.h:19,
+#79 8.609                  from /root/catkin_ws/src/mdpcalib/FAST_LO/include/LI_init/LI_init.cpp:1:
+#79 8.609 /root/catkin_ws/src/mdpcalib/FAST_LO/include/matplotlibcpp.h:19:10: fatal error: numpy/arrayobject.h: No such file or directory
+#79 8.609    19 | #include <numpy/arrayobject.h>
+#79 8.609       |          ^~~~~~~~~~~~~~~~~~~~~
+#79 8.609 compilation terminated.
+#79 8.609 make[2]: *** [CMakeFiles/li_init.dir/build.make:89: CMakeFiles/li_init.dir/include/LI_init/LI_init.cpp.o] Error 1
+#79 8.609 make[2]: *** Waiting for unfinished jobs....
+#79 8.609 In file included from /root/catkin_ws/src/mdpcalib/FAST_LO/include/LI_init/LI_init.h:19,
+#79 8.609                  from /root/catkin_ws/src/mdpcalib/FAST_LO/src/laserMapping.cpp:35:
+#79 8.609 /root/catkin_ws/src/mdpcalib/FAST_LO/include/matplotlibcpp.h:19:10: fatal error: numpy/arrayobject.h: No such file or directory
+#79 8.609    19 | #include <numpy/arrayobject.h>
+#79 8.609       |          ^~~~~~~~~~~~~~~~~~~~~
+#79 8.609 compilation terminated.
+#79 8.609 make[2]: *** [CMakeFiles/li_init.dir/build.make:63: CMakeFiles/li_init.dir/src/laserMapping.cpp.o] Error 1
+#79 8.609 In file included from /usr/include/boost/preprocessor/tuple/elem.hpp:23,
+#79 8.609                  from /usr/include/boost/preprocessor/arithmetic/add.hpp:21,
+#79 8.609                  from /usr/include/boost/mpl/aux_/preprocessor/def_params_tail.hpp:66,
+#79 8.609                  from /usr/include/boost/mpl/aux_/na_spec.hpp:28,
+#79 8.609                  from /usr/include/boost/mpl/next_prior.hpp:18,
+#79 8.609                  from /usr/include/boost/mpl/next.hpp:17,
+#79 8.609                  from /usr/include/boost/mpl/list/aux_/push_front.hpp:18,
+#79 8.609                  from /usr/include/boost/mpl/list/list0.hpp:19,
+#79 8.609                  from /usr/include/boost/mpl/list/list10.hpp:18,
+#79 8.609                  from /usr/include/boost/mpl/list/list20.hpp:18,
+#79 8.609                  from /usr/include/boost/mpl/list.hpp:36,
+#79 8.609                  from /usr/include/boost/math/policies/policy.hpp:9,
+#79 8.609                  from /usr/include/boost/math/policies/error_handling.hpp:21,
+#79 8.609                  from /usr/include/boost/math/special_functions/round.hpp:14,
+#79 8.609                  from /opt/ros/noetic/include/ros/time.h:58,
+#79 8.609                  from /opt/ros/noetic/include/ros/ros.h:38,
+#79 8.609                  from /opt/ros/noetic/include/pcl_conversions/pcl_conversions.h:42,
+#79 8.609                  from /root/catkin_ws/src/mdpcalib/FAST_LO/src/preprocess.h:4,
+#79 8.609                  from /root/catkin_ws/src/mdpcalib/FAST_LO/src/preprocess.cpp:1:
+#79 8.609 /root/catkin_ws/src/mdpcalib/FAST_LO/src/preprocess.h:44:105: warning: ‘using uint16_t = uint16_t’ is deprecated: use std::uint16_t instead of pcl::uint16_t [-Wdeprecated-declarations]
+#79 8.609    44 |                                                                           intensity)(float, time, time)(uint16_t, ring,
+#79 8.609       |                                                                                                         ^~~~~~~~
+#79 8.609 In file included from /usr/include/pcl-1.10/pcl/PCLPointField.h:10,
+#79 8.609                  from /usr/include/pcl-1.10/pcl/conversions.h:46,
+#79 8.609                  from /opt/ros/noetic/include/pcl_conversions/pcl_conversions.h:44,
+#79 8.609                  from /root/catkin_ws/src/mdpcalib/FAST_LO/src/preprocess.h:4,
+#79 8.609                  from /root/catkin_ws/src/mdpcalib/FAST_LO/src/preprocess.cpp:1:
+#79 8.609 /usr/include/pcl-1.10/pcl/pcl_macros.h:94:9: note: declared here
+#79 8.609    94 |   using uint16_t [[deprecated("use std::uint16_t instead of pcl::uint16_t")]] = std::uint16_t;
+#79 8.609       |         ^~~~~~~~
+#79 8.609 In file included from /usr/include/boost/preprocessor/tuple/elem.hpp:23,
+#79 8.609                  from /usr/include/boost/preprocessor/arithmetic/add.hpp:21,
+#79 8.609                  from /usr/include/boost/mpl/aux_/preprocessor/def_params_tail.hpp:66,
+#79 8.609                  from /usr/include/boost/mpl/aux_/na_spec.hpp:28,
+#79 8.609                  from /usr/include/boost/mpl/next_prior.hpp:18,
+#79 8.609                  from /usr/include/boost/mpl/next.hpp:17,
+#79 8.609                  from /usr/include/boost/mpl/list/aux_/push_front.hpp:18,
+#79 8.609                  from /usr/include/boost/mpl/list/list0.hpp:19,
+#79 8.609                  from /usr/include/boost/mpl/list/list10.hpp:18,
+#79 8.609                  from /usr/include/boost/mpl/list/list20.hpp:18,
+#79 8.609                  from /usr/include/boost/mpl/list.hpp:36,
+#79 8.609                  from /usr/include/boost/math/policies/policy.hpp:9,
+#79 8.609                  from /usr/include/boost/math/policies/error_handling.hpp:21,
+#79 8.609                  from /usr/include/boost/math/special_functions/round.hpp:14,
+#79 8.609                  from /opt/ros/noetic/include/ros/time.h:58,
+#79 8.609                  from /opt/ros/noetic/include/ros/ros.h:38,
+#79 8.609                  from /opt/ros/noetic/include/pcl_conversions/pcl_conversions.h:42,
+#79 8.609                  from /root/catkin_ws/src/mdpcalib/FAST_LO/src/preprocess.h:4,
+#79 8.609                  from /root/catkin_ws/src/mdpcalib/FAST_LO/src/preprocess.cpp:1:
+#79 8.609 /root/catkin_ws/src/mdpcalib/FAST_LO/src/preprocess.h:44:105: warning: ‘using uint16_t = uint16_t’ is deprecated: use std::uint16_t instead of pcl::uint16_t [-Wdeprecated-declarations]
+#79 8.609    44 |                                                                           intensity)(float, time, time)(uint16_t, ring,
+#79 8.609       |                                                                                                         ^~~~~~~~
+#79 8.609 In file included from /usr/include/pcl-1.10/pcl/PCLPointField.h:10,
+#79 8.609                  from /usr/include/pcl-1.10/pcl/conversions.h:46,
+#79 8.609                  from /opt/ros/noetic/include/pcl_conversions/pcl_conversions.h:44,
+#79 8.609                  from /root/catkin_ws/src/mdpcalib/FAST_LO/src/preprocess.h:4,
+#79 8.609                  from /root/catkin_ws/src/mdpcalib/FAST_LO/src/preprocess.cpp:1:
+#79 8.609 /usr/include/pcl-1.10/pcl/pcl_macros.h:94:9: note: declared here
+#79 8.609    94 |   using uint16_t [[deprecated("use std::uint16_t instead of pcl::uint16_t")]] = std::uint16_t;
+#79 8.609       |         ^~~~~~~~
+#79 8.609 make[2]: Leaving directory '/root/catkin_ws/build/lidar_imu_init'
+#79 8.609 make[1]: *** [CMakeFiles/Makefile2:2843: CMakeFiles/fast_lo.dir/all] Error 2
+#79 8.609 make[1]: *** Waiting for unfinished jobs....
+#79 8.609 make[2]: Leaving directory '/root/catkin_ws/build/lidar_imu_init'
+#79 8.609 make[1]: Leaving directory '/root/catkin_ws/build/lidar_imu_init'
+#79 8.609 make[1]: *** [CMakeFiles/Makefile2:239: CMakeFiles/li_init.dir/all] Error 2
+#79 8.609 make: *** [Makefile:141: all] Error 2
+#79 8.609 cd /root/catkin_ws/build/lidar_imu_init; catkin build --get-env lidar_imu_init | catkin env -si  /usr/bin/make --jobserver-auth=3,4; cd -
+#79 8.614 _______________________________________________________________________________
+#79 8.614 Warnings << lidar_imu_init:cmake /root/catkin_ws/logs/lidar_imu_init/build.cmake.000.log
+#79 8.614 ...............................................................................
+#79 8.614 _______________________________________________________________________________
+#79 8.614 Errors << lidar_imu_init:make /root/catkin_ws/logs/lidar_imu_init/build.make.000.log
+#79 8.614 ...............................................................................
+#79 8.614 Failed << lidar_imu_init:make                   [ Exited with code 2 ]         
+#79 8.614 
+#79 8.614 Failed <<< lidar_imu_init                       [ 7.3 seconds ]                
+#79 8.614 [build] Summary: 1 of 2 packages succeeded.                                    
+#79 8.614 [build] Ignored: 9 packages were skipped or are skiplisted.                    
+#79 8.614 [build] Warnings: 1 packages succeeded with warnings.                          
+#79 8.614 [build] Abandoned: No packages were abandoned.                                 
+#79 8.614 [build] Failed: 1 packages failed.                                             
+#79 8.614 [build] Runtime: 8.2 seconds total.                                            
+#79 8.614 [build] Note: Workspace packages have changed, please re-source setup files to use them.
+#79 ERROR: process "/bin/sh -c /bin/bash -c '. /opt/ros/noetic/setup.bash; catkin build lidar_imu_init -v'" did not complete successfully: exit code: 1
+------
+ > [building_calibration 28/37] RUN /bin/bash -c '. /opt/ros/noetic/setup.bash; catkin build lidar_imu_init -v':
+8.614 Failed << lidar_imu_init:make                   [ Exited with code 2 ]         
+8.614 
+8.614 Failed <<< lidar_imu_init                       [ 7.3 seconds ]                
+8.614 [build] Summary: 1 of 2 packages succeeded.                                    
+8.614 [build] Ignored: 9 packages were skipped or are skiplisted.                    
+8.614 [build] Warnings: 1 packages succeeded with warnings.                          
+8.614 [build] Abandoned: No packages were abandoned.                                 
+8.614 [build] Failed: 1 packages failed.                                             
+8.614 [build] Runtime: 8.2 seconds total.                                            
+8.614 [build] Note: Workspace packages have changed, please re-source setup files to use them.
+------
+
+ [33m6 warnings found (use docker --debug to expand):
+[0m - LegacyKeyValueFormat: "ENV key=value" should be used instead of legacy "ENV key value" format (line 4)
+ - LegacyKeyValueFormat: "ENV key=value" should be used instead of legacy "ENV key value" format (line 5)
+ - LegacyKeyValueFormat: "ENV key=value" should be used instead of legacy "ENV key value" format (line 6)
+ - LegacyKeyValueFormat: "ENV key=value" should be used instead of legacy "ENV key value" format (line 7)
+ - LegacyKeyValueFormat: "ENV key=value" should be used instead of legacy "ENV key value" format (line 176)
+ - LegacyKeyValueFormat: "ENV key=value" should be used instead of legacy "ENV key value" format (line 3)
+Dockerfile:162
+--------------------
+ 160 |     RUN /bin/bash -c '. /opt/ros/noetic/setup.bash; catkin config --profile default --cmake-args -DCMAKE_BUILD_TYPE=Release'
+ 161 |     RUN /bin/bash -c '. /opt/ros/noetic/setup.bash; catkin config --profile debug -x _debug --cmake-args -DCMAKE_BUILD_TYPE=Debug'
+ 162 | >>> RUN /bin/bash -c '. /opt/ros/noetic/setup.bash; catkin build lidar_imu_init -v'
+ 163 |     
+ 164 |     # Setup environment and entrypoint
+--------------------
+ERROR: failed to build: failed to solve: process "/bin/sh -c /bin/bash -c '. /opt/ros/noetic/setup.bash; catkin build lidar_imu_init -v'" did not complete successfully: exit code: 1

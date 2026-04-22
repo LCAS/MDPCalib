@@ -4,10 +4,14 @@
 #include "optimization_utils/forward.h"
 
 // ----- STL includes
-#include <vector>
-#include <filesystem>
-#include <iostream>
 #include <cstdlib>
+#include <filesystem>
+#include <fstream>
+#include <iomanip>
+#include <iostream>
+#include <stdexcept>
+#include <string>
+#include <vector>
 
 // ----- Boost includes
 #include <boost/filesystem.hpp>
@@ -21,7 +25,7 @@ namespace fs = std::filesystem;
 namespace optimization_utils{
 
 
-struct IOUtils{
+struct IOUtils {
     static uint16_t ctrLaunchFile;
     static uint16_t ctrConfigFile;
     static uint16_t ctrInitVisuFile;
@@ -45,13 +49,17 @@ struct IOUtils{
 
     void copyFiles();
 
-    std::vector<fs::path> get_all(fs::path const & root, std::string const & ext);
+    std::vector<fs::path> get_all(fs::path const& root, std::string const& ext);
 
     void copyFile(const fs::path& pathFileSrc, const fs::path& pathDirDist);
 
     void writeResults(std::stringstream& stream);
 
     void writeImage(const sensor_msgs::ImageConstPtr& img_msg);
+
+    void writeRos2CalibrationYaml(const std::string& pathFile, const std::string& parameterRoot,
+                                  const std::string& parentFrameId, const std::string& childFrameId,
+                                  const PosePQ& pose);
 
     PosePQ evaluate(const PosePQ& poseGt, const PosePQ& posePred);
 

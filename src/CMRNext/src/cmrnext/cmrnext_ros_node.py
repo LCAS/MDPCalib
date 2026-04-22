@@ -126,9 +126,16 @@ class CMRNextNode:
         # If the estimated rotation from LiDAR odometry is above a threshold, ignore this pair
         #  b/c the proiection will not be sufficiently accurate due to imperfect undistortion.
         quaternion = lidar_pose_msg.pose.orientation
+        quaternion_xyzw = np.array([quaternion.x, quaternion.y, quaternion.z, quaternion.w],
+                                   dtype=np.float64)
+        if np.linalg.norm(quaternion_xyzw) < 1e-8:
+            rospy.logwarn(
+                f"Ignoring image and pcl with seq {synced_data_filename_msg.header.seq} due to "
+                "invalid zero-norm LiDAR orientation.")
+            filename.unlink()
+            return
         rotation = torch.from_numpy(
-            R.from_quat([quaternion.x, quaternion.y, quaternion.z,
-                         quaternion.w]).as_euler("yxz", degrees=True))
+            R.from_quat(quaternion_xyzw).as_euler("yxz", degrees=True))
         yaw = rotation[2]
         relative_yaw = np.abs(yaw - self.prev_yaw)
         self.prev_yaw = yaw
@@ -337,6 +344,14 @@ class CMRNextNode:
                         correspondences_topic: str = "/cmrnext/correspondences") -> None:
         rospy.init_node(name)
         rospy.loginfo("Starting CMRNext node.")
+
+        camera_info_topic = rospy.get_param("~camera_info_topic", camera_info_topic)
+        synced_data_filename_topic = rospy.get_param("~synced_data_filename_topic",
+                                                     synced_data_filename_topic)
+        initial_transform_topic = rospy.get_param("~initial_transform_topic", initial_transform_topic)
+        initial_transform_meta_topic = rospy.get_param("~initial_transform_meta_topic",
+                                                       initial_transform_meta_topic)
+        correspondences_topic = rospy.get_param("~correspondences_topic", correspondences_topic)
 
         calibration_options_path = rospkg.RosPack().get_path("calib_cfg") + "/config/config.yaml"
         with open(calibration_options_path, "r", encoding="utf-8") as f:

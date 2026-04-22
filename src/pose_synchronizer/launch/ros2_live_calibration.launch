@@ -1,0 +1,83 @@
+<launch>
+  <arg name="camera_input_image_topic" default="/camera/image_raw" />
+  <arg name="camera_input_camera_info_topic" default="/camera/camera_info" />
+  <arg name="camera_output_image_topic" default="/camera_undistorted/image" />
+  <arg name="camera_output_camera_info_topic" default="/camera_undistorted/camera_info" />
+  <arg name="lidar_points_topic" default="/points_raw" />
+  <arg name="imu_topic" default="/imu/data" />
+  <arg name="fast_lo_config_file" default="$(find lidar_imu_init)/config/ouster.yaml" />
+  <arg name="fast_lo_disable_motion_compensation" default="false" />
+  <arg name="orb_slam_settings_file" default="$(find orb_slam3_ros_wrapper)/config/kitti_camera_color_left_right.yaml" />
+  <arg name="cmrnext_weight_1" default="/data/cmrnext/cmrnext-calib-LEnc-iter1.tar" />
+  <arg name="cmrnext_weight_2" default="/data/cmrnext/cmrnext-calib-LEnc-iter5.tar" />
+  <arg name="cmrnext_weight_3" default="/data/cmrnext/cmrnext-calib-LEnc-iter6.tar" />
+  <arg name="cmrnext_image_height" default="376" />
+  <arg name="cmrnext_image_width" default="1241" />
+  <arg name="disable_pose_synchronizer" default="false" />
+  <arg name="lidar_frame_id" default="lidar" />
+  <arg name="camera_frame_id" default="camera" />
+  <arg name="ros2_export_yaml_path" default="/data/calibration/ros2/extrinsics.yaml" />
+  <arg name="ros2_export_parameter_root" default="/**" />
+  <arg name="calibration_timeout_sec" default="900" />
+
+  <node pkg="pose_synchronizer" type="camera_passthrough_adapter.py" name="camera_passthrough_adapter" output="screen">
+    <param name="input_image_topic" value="$(arg camera_input_image_topic)" />
+    <param name="input_camera_info_topic" value="$(arg camera_input_camera_info_topic)" />
+    <param name="output_image_topic" value="$(arg camera_output_image_topic)" />
+    <param name="output_camera_info_topic" value="$(arg camera_output_camera_info_topic)" />
+  </node>
+
+  <node name="orb_slam3_mono" pkg="orb_slam3_ros_wrapper" type="orb_slam3_ros_wrapper_mono" output="screen">
+    <remap from="/camera/image_raw" to="$(arg camera_output_image_topic)" />
+    <param name="voc_file" type="string" value="/root/ORB_SLAM3/Vocabulary/ORBvoc.txt" />
+    <param name="settings_file" type="string" value="$(arg orb_slam_settings_file)" />
+    <param name="world_frame_id" type="string" value="world" />
+    <param name="cam_frame_id" type="string" value="$(arg camera_frame_id)" />
+    <param name="enable_pangolin" type="bool" value="false" />
+  </node>
+
+  <rosparam command="load" file="$(arg fast_lo_config_file)" />
+  <param name="common/lid_topic" value="$(arg lidar_points_topic)" />
+  <param name="common/imu_topic" value="$(arg imu_topic)" />
+  <param name="disable_motion_compensation" value="$(arg fast_lo_disable_motion_compensation)" />
+  <param name="point_filter_num" type="int" value="1" />
+  <param name="max_iteration" type="int" value="5" />
+  <param name="cube_side_length" type="double" value="2000" />
+  <node pkg="lidar_imu_init" type="fast_lo" name="FAST_LO" output="screen" />
+
+  <node pkg="pose_synchronizer" name="pose_synchronizer" type="pose_synchronizer" output="screen">
+    <param name="disable_pose_synchronizer" value="$(arg disable_pose_synchronizer)" />
+    <param name="camera_pose_topic" value="/orb_slam3/camera_pose" />
+    <param name="camera_image_topic" value="$(arg camera_output_image_topic)" />
+    <param name="lidar_odometry_topic" value="/odom" />
+    <param name="lidar_pointcloud_topic" value="/cloud_registered_body" />
+    <param name="initial_transform_meta_topic" value="/optimizer/initial_transform_meta" />
+  </node>
+
+  <node pkg="optimization_utils" name="optimization_utils" type="optimization_utils" output="screen">
+    <param name="camera_info_topic" value="$(arg camera_output_camera_info_topic)" />
+    <param name="synced_poses_filename_topic" value="/synced_data/filename_poses" />
+    <param name="gt_extrinsics_topic" value="/gt_extrinsics" />
+    <param name="correspondences_topic" value="/cmrnext/correspondences" />
+    <param name="lidar_frame_id" value="$(arg lidar_frame_id)" />
+    <param name="camera_frame_id" value="$(arg camera_frame_id)" />
+    <param name="ros2_export_yaml_path" value="$(arg ros2_export_yaml_path)" />
+    <param name="ros2_export_parameter_root" value="$(arg ros2_export_parameter_root)" />
+  </node>
+
+  <node name="cmrnext" pkg="cmrnext" type="cmrnext_ros_node.py"
+        args="--image_shape $(arg cmrnext_image_height) $(arg cmrnext_image_width) --weights $(arg cmrnext_weight_1) $(arg cmrnext_weight_2) $(arg cmrnext_weight_3)"
+        output="screen">
+    <param name="camera_info_topic" value="$(arg camera_output_camera_info_topic)" />
+    <param name="synced_data_filename_topic" value="/synced_data/filename" />
+    <param name="initial_transform_topic" value="/optimizer/initial_transform" />
+    <param name="initial_transform_meta_topic" value="/optimizer/initial_transform_meta" />
+    <param name="correspondences_topic" value="/cmrnext/correspondences" />
+  </node>
+
+  <node pkg="pose_synchronizer" type="calibration_result_monitor.py" name="calibration_result_monitor"
+        output="screen" required="true">
+    <param name="result_topic" value="/optimizer/refined_transform" />
+    <param name="timeout_sec" value="$(arg calibration_timeout_sec)" />
+  </node>
+</launch>

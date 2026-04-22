@@ -39,10 +39,17 @@ Optimizer::Optimizer(ros::NodeHandle* nh, const std::string& calibration_options
     // camera_pose_subscriber_ = nullptr;
     // lidar_pose_subscriber_ = nullptr;
     synced_poses_filename_subscriber_ = nullptr;
+    camera_model_ = nullptr;
     initial_transform_pub_ = nh->advertise<geometry_msgs::TransformStamped>("/optimizer/initial_transform", 1);
     refined_transform_pub_ = nh->advertise<geometry_msgs::TransformStamped>("/optimizer/refined_transform", 1);
     initial_transform_meta_pub_ =
         nh->advertise<calib_msgs::UInt16MultiArrayStamped>("/optimizer/initial_transform_meta", 1);
+
+    ros::NodeHandle private_nh("~");
+    private_nh.param<std::string>("lidar_frame_id", lidar_frame_id_, "lidar");
+    private_nh.param<std::string>("camera_frame_id", camera_frame_id_, "camera");
+    private_nh.param<std::string>("ros2_export_yaml_path", ros2_export_yaml_path_, "");
+    private_nh.param<std::string>("ros2_export_parameter_root", ros2_export_parameter_root_, "/**");
 
     // Parse the global configuration file
     YAML::Node node = YAML::LoadFile(calibration_options);
@@ -61,6 +68,9 @@ Optimizer::Optimizer(ros::NodeHandle* nh, const std::string& calibration_options
     ROS_INFO_STREAM("Created run directories.");
     io_utils_.copyFiles();
     ROS_INFO_STREAM("Copied config files and launch files.");
+    if (ros2_export_yaml_path_.empty()) {
+        ros2_export_yaml_path_ = io_utils_.pathResultsDir_ + "/calibration_ros2.yaml";
+    }
 }
 
 Optimizer::~Optimizer() {
@@ -88,6 +98,8 @@ void Optimizer::SetSubscriber(ros::Subscriber* const synced_poses_filename_subsc
 void Optimizer::CameraInfoCallback(const sensor_msgs::CameraInfoConstPtr& camera_info_msg) {
     ROS_INFO_STREAM("Received intrinsic calibration of camera");
 
+    delete camera_model_;
+    camera_model_ = nullptr;
     camera_model_ = new CameraModelPinhole(camera_info_msg->width, camera_info_msg->height, camera_info_msg->P[0],
                                            camera_info_msg->P[5], camera_info_msg->P[2], camera_info_msg->P[6]);
 
@@ -409,6 +421,8 @@ void Optimizer::ComputeInitialTransform() {
     initial_transform_msg.transform.rotation.z = initial_transform->q.z();
     initial_transform_msg.transform.rotation.w = initial_transform->q.w();
     initial_transform_msg.header.stamp = camera_pose_msg.header.stamp;
+    initial_transform_msg.header.frame_id = lidar_frame_id_;
+    initial_transform_msg.child_frame_id = camera_frame_id_;
     initial_transform_pub_.publish(initial_transform_msg);
 }
 
@@ -575,25 +589,34 @@ void Optimizer::ComputeRefinedTransform() {
     io_utils_.writeResults(refineStream);
 
     // ----- LOGGING OF ERRORS
-    auto errorNorm = this->EvaluateNorms(*gt_extrinsics_, *refined_transform);
-    auto error6d = this->Evaluate6d(*gt_extrinsics_, *refined_transform);
-    eval6dRefineStream
-        << "The error (after optimization with correspondences) measured as translation vector (x,y,z) and euler "
-           "angles (zyx)\nTranslation: ("
-        << error6d.first.x() << ", " << error6d.first.y() << ", " << error6d.first.z() << ") meters\nRotation:    ("
-        << error6d.second.x() << ", " << error6d.second.y() << ", " << error6d.second.z() << ") radians"
-        << "\n\n";
-    ROS_INFO_STREAM(eval6dRefineStream.str());
-    io_utils_.writeResults(eval6dRefineStream);
+    if (gt_extrinsics_ != nullptr) {
+        auto errorNorm = this->EvaluateNorms(*gt_extrinsics_, *refined_transform);
+        auto error6d = this->Evaluate6d(*gt_extrinsics_, *refined_transform);
+        eval6dRefineStream
+            << "The error (after optimization with correspondences) measured as translation vector (x,y,z) and "
+               "euler angles (zyx)\nTranslation: ("
+            << error6d.first.x() << ", " << error6d.first.y() << ", " << error6d.first.z()
+            << ") meters\nRotation:    (" << error6d.second.x() << ", " << error6d.second.y() << ", "
+            << error6d.second.z() << ") radians"
+            << "\n\n";
+        ROS_INFO_STREAM(eval6dRefineStream.str());
+        io_utils_.writeResults(eval6dRefineStream);
 
-    evalNormRefineStream
-        << "The error (after optimization with correspondences) measured as translation magnitude (delta_t) and "
-           "rotation magnitude (delta_r)\nTranslation magnitude: ("
-        << errorNorm.first << ") meters\nRotation magnitude:    (" << errorNorm.second
-        << ") radians\n                       (" << errorNorm.second * 180.0 / M_PI << ") degrees"
-        << "\n\n";
-    ROS_INFO_STREAM(evalNormRefineStream.str());
-    io_utils_.writeResults(evalNormRefineStream);
+        evalNormRefineStream
+            << "The error (after optimization with correspondences) measured as translation magnitude (delta_t) and "
+               "rotation magnitude (delta_r)\nTranslation magnitude: ("
+            << errorNorm.first << ") meters\nRotation magnitude:    (" << errorNorm.second
+            << ") radians\n                       (" << errorNorm.second * 180.0 / M_PI << ") degrees"
+            << "\n\n";
+        ROS_INFO_STREAM(evalNormRefineStream.str());
+        io_utils_.writeResults(evalNormRefineStream);
+    } else {
+        std::stringstream noGtStream;
+        noGtStream << "No reference extrinsics were provided on /gt_extrinsics. "
+                      "Skipping final error evaluation.\n\n";
+        ROS_INFO_STREAM(noGtStream.str());
+        io_utils_.writeResults(noGtStream);
+    }
 
     // Publish the refined transform
     geometry_msgs::TransformStamped refined_transform_msg;
@@ -605,7 +628,13 @@ void Optimizer::ComputeRefinedTransform() {
     refined_transform_msg.transform.rotation.z = refined_transform->q.z();
     refined_transform_msg.transform.rotation.w = refined_transform->q.w();
     refined_transform_msg.header.stamp = camera_pose_msg.header.stamp;
+    refined_transform_msg.header.frame_id = lidar_frame_id_;
+    refined_transform_msg.child_frame_id = camera_frame_id_;
     refined_transform_pub_.publish(refined_transform_msg);
+
+    io_utils_.writeRos2CalibrationYaml(ros2_export_yaml_path_, ros2_export_parameter_root_, lidar_frame_id_,
+                                       camera_frame_id_, *refined_transform);
+    ROS_INFO_STREAM("Wrote ROS 2 calibration YAML to " << ros2_export_yaml_path_);
 
     // Terminate this node. The job is done.
     ROS_INFO_STREAM("Done processing. Shutting down the optimizer node.");

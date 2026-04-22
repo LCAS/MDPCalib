@@ -126,4 +126,44 @@ void IOUtils::writeImage(const sensor_msgs::ImageConstPtr& img_msg) {
     cv::imwrite(this->pathVisualizationsDir_ + "/" + filename, img);
 }
 
+void IOUtils::writeRos2CalibrationYaml(const std::string& pathFile, const std::string& parameterRoot,
+                                       const std::string& parentFrameId, const std::string& childFrameId,
+                                       const PosePQ& pose) {
+    if (pathFile.empty()) {
+        return;
+    }
+
+    fs::path outputPath(pathFile);
+    if (outputPath.has_parent_path()) {
+        fs::create_directories(outputPath.parent_path());
+    }
+
+    const std::string root = parameterRoot.empty() ? "/**" : parameterRoot;
+    const Eigen::Matrix4d poseMatrix = pose.ToPoseMatrix();
+
+    std::ofstream yamlFile(outputPath);
+    if (!yamlFile.is_open()) {
+        throw std::runtime_error("Could not open ROS 2 calibration output file: " + pathFile);
+    }
+
+    yamlFile << std::fixed << std::setprecision(10);
+    yamlFile << root << ":\n";
+    yamlFile << "  ros__parameters:\n";
+    yamlFile << "    mdpcalib_parent_frame: \"" << parentFrameId << "\"\n";
+    yamlFile << "    mdpcalib_child_frame: \"" << childFrameId << "\"\n";
+    yamlFile << "    mdpcalib_translation_xyz: [" << pose.p.x() << ", " << pose.p.y() << ", " << pose.p.z() << "]\n";
+    yamlFile << "    mdpcalib_rotation_xyzw: [" << pose.q.x() << ", " << pose.q.y() << ", " << pose.q.z() << ", "
+             << pose.q.w() << "]\n";
+    yamlFile << "    mdpcalib_transform_matrix_row_major: [";
+    for (int row = 0; row < poseMatrix.rows(); row++) {
+        for (int col = 0; col < poseMatrix.cols(); col++) {
+            if (row != 0 || col != 0) {
+                yamlFile << ", ";
+            }
+            yamlFile << poseMatrix(row, col);
+        }
+    }
+    yamlFile << "]\n";
+}
+
 }  // namespace optimization_utils
