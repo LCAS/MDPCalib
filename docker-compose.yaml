@@ -1,20 +1,16 @@
 services:
   mdpcalib:
-    build:
-      context: .
+    image: ${MDPCALIB_IMAGE:-ghcr.io/lcas/mdpcalib:latest}
     volumes:
-      # mount this code
-      - ./src:/root/catkin_ws/src/mdpcalib
-
-      # your data volume goes here
-
+      # your data volume (set DATA_PATH in your .env file)
+      - ${DATA_PATH:-./data}:/data
 
       # required x-forwarding
       - /tmp/.X11-unix:/tmp/.X11-unix
 
     environment:
-      - DISPLAY
-      - XAUTHORITY
+      - DISPLAY=${DISPLAY:-:0}
+      - XAUTHORITY=${XAUTHORITY:-}
       - NVIDIA_DRIVER_CAPABILITIES=all
 
     deploy:

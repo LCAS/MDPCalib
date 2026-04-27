@@ -41,9 +41,61 @@ Sensor setups of robotic platforms commonly include both camera and LiDAR as the
 
 Tested with `Docker version 28.0.1` and `Docker Compose version v2.33.1`.
 
-- To build the image, run `docker compose build` in the root of this repository.
-- Prepare using GUIs in the container: `xhost +local:docker`.
-- Start container and mount rosbags: `docker compose run -v PATH_TO_DATA:/data -it mdpcalib`
+Pre-built images are published automatically to the GitHub Container Registry on every push to `main` and on every version tag:
+
+```
+ghcr.io/lcas/mdpcalib:latest       # latest build from main
+ghcr.io/lcas/mdpcalib:<version>    # e.g. ghcr.io/lcas/mdpcalib:1.2.3
+```
+
+##### Quick start (no source checkout required)
+
+1. Download the compose file:
+   ```bash
+   curl -O https://raw.githubusercontent.com/LCAS/MDPCalib/main/docker-compose.yaml
+   ```
+2. Create a `.env` file from the provided example:
+   ```bash
+   curl -O https://raw.githubusercontent.com/LCAS/MDPCalib/main/.env.example
+   cp .env.example .env
+   # Edit .env (not .env.example) and set DATA_PATH to your local data directory
+   ```
+3. Allow GUI applications (e.g. RViz) to connect to your display:
+   ```bash
+   xhost +local:docker
+   ```
+4. Start the container:
+   ```bash
+   docker compose run -it mdpcalib
+   ```
+
+The `.env` file controls the following variables (see [`.env.example`](.env.example) for documentation):
+
+| Variable | Default | Description |
+|---|---|---|
+| `MDPCALIB_IMAGE` | `ghcr.io/lcas/mdpcalib:latest` | Docker image to use |
+| `DATA_PATH` | `./data` | Host path mounted to `/data` inside the container |
+| `DISPLAY` | `:0` | X11 display for GUI tools |
+| `XAUTHORITY` | *(empty)* | X11 authority file (optional) |
+
+##### Building the image locally (for development)
+
+To build the image from source instead of pulling the pre-built one, create a
+`docker-compose.override.yml` alongside `docker-compose.yaml`:
+
+```yaml
+services:
+  mdpcalib:
+    build:
+      context: .
+    volumes:
+      # mount the local source tree so changes are reflected immediately
+      - ./src:/root/catkin_ws/src/mdpcalib
+```
+
+Then run `docker compose build` to build, or `docker compose run -it mdpcalib` to
+start the container.  Docker Compose automatically merges the override file.
+
 - Connect to a running container: `docker compose exec -it mdpcalib bash`
 
 
