@@ -48,9 +48,11 @@ ghcr.io/lcas/mdpcalib:latest       # latest build from main
 ghcr.io/lcas/mdpcalib:<version>    # e.g. ghcr.io/lcas/mdpcalib:1.2.3
 ```
 
-The compose stack includes a VNC service ([`lcas.lincoln.ac.uk/vnc`](https://github.com/LCAS/ros2_pkg_template)) so no local X11 display or `xhost` configuration is required.
+The compose stack includes a VNC service ([`lcas.lincoln.ac.uk/vnc`](https://github.com/LCAS/ros2_pkg_template)) so no local X11 display or `xhost` configuration is required. The VNC viewer is accessible at **http://localhost:5801**.
 
-##### Quick start (no source checkout required)
+##### Quick start — calibrate from a ros2bag
+
+The `bag-player` service plays a ros2bag folder automatically. The calibration runs against the replayed data.
 
 1. Download the compose file and example environment:
    ```bash
@@ -58,32 +60,39 @@ The compose stack includes a VNC service ([`lcas.lincoln.ac.uk/vnc`](https://git
    curl -O https://raw.githubusercontent.com/LCAS/MDPCalib/main/.env.example
    cp .env.example .env
    ```
-2. Edit `.env` and set at least `DATA_PATH` and the ROS 2 topic names for your robot.
-3. Start the full stack (VNC + calibration):
+2. Edit `.env`:
+   - Set `DATA_PATH` to the parent of your data directory.
+   - Place your rosbag2 folder at `$DATA_PATH/bag/` (or override `BAG_PATH`).
+   - Set the ROS 2 topic names to match what is recorded in your bag.
+3. Start the full stack (VNC + bag player + calibration):
    ```bash
    docker compose up
    ```
 
-The calibration runs automatically on `docker compose up`. Logs are written to
+The calibration starts automatically once the bag begins playing. Logs are written to
 `$DATA_PATH/runtime_logs/`. The final calibration result is written to
 `$DATA_PATH/calibration/ros2/extrinsics.yaml`.
 
-The `.env` file controls the following variables (see [`.env.example`](.env.example) for documentation):
+Open **http://localhost:5801** in a browser to view the RViz / GUI output via VNC.
+
+The `.env` file controls the following variables (see [`.env.example`](.env.example) for full documentation):
 
 | Variable | Default | Description |
 |---|---|---|
-| `DATA_PATH` | `./data` | Host path mounted to `/data` inside the container |
-| `ROS2_CAMERA_IMAGE_TOPIC` | `/camera/image_raw` | ROS 2 camera image topic |
-| `ROS2_CAMERA_INFO_TOPIC` | `/camera/camera_info` | ROS 2 camera info topic |
-| `ROS2_LIDAR_POINTS_TOPIC` | `/points_raw` | ROS 2 LiDAR point cloud topic |
-| `ROS2_IMU_TOPIC` | `/imu/data` | ROS 2 IMU topic |
+| `DATA_PATH` | `./data` | Host path mounted to `/data` inside all containers |
+| `BAG_PATH` | `/data/bag` | Path inside the container to the rosbag2 folder |
+| `BAG_LOOP` | `false` | Set to `true` to loop the bag |
+| `BAG_RATE` | `1.0` | Playback rate multiplier |
+| `ROS2_CAMERA_IMAGE_TOPIC` | `/camera/image_raw` | Camera image topic in the bag |
+| `ROS2_CAMERA_INFO_TOPIC` | `/camera/camera_info` | Camera info topic in the bag |
+| `ROS2_LIDAR_POINTS_TOPIC` | `/points_raw` | LiDAR point cloud topic in the bag |
+| `ROS2_IMU_TOPIC` | `/imu/data` | IMU topic in the bag |
 | `LIDAR_FRAME_ID` | `lidar` | LiDAR frame ID in the exported YAML |
 | `CAMERA_FRAME_ID` | `camera` | Camera frame ID in the exported YAML |
 
-##### Building the image locally (for development)
+##### Building the images locally (for development)
 
-The compose file includes a `build:` context pointing to the repository root, so you
-can build the image directly without any additional override file:
+The compose file includes `build:` contexts for both the `mdpcalib` and `bag-player` services, so you can build everything from source:
 
 ```bash
 docker compose build

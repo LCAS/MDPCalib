@@ -5,9 +5,29 @@ services:
       - x11:/tmp/.X11-unix
     networks:
       - mdpcalib_net
+    ports:
+      - "5801:5801"
     stdin_open: true
     tty: true
     ipc: shareable
+
+  bag-player:
+    build:
+      context: ./bag-player
+    image: ghcr.io/lcas/mdpcalib-bag-player:latest
+    volumes:
+      # your data volume (set DATA_PATH in your .env file); the rosbag2 folder
+      # is expected at $DATA_PATH/bag (override with BAG_PATH).
+      - ${DATA_PATH:-./data}:/data
+    environment:
+      - BAG_PATH=${BAG_PATH:-/data/bag}
+      - BAG_LOOP=${BAG_LOOP:-false}
+      - BAG_RATE=${BAG_RATE:-1.0}
+      - ROS_DOMAIN_ID=${ROS_DOMAIN_ID:-0}
+    networks:
+      - mdpcalib_net
+    depends_on:
+      - vnc
 
   mdpcalib:
     build:
@@ -31,6 +51,7 @@ services:
       - ROS2_IMU_TOPIC=${ROS2_IMU_TOPIC:-/imu/data}
       - LIDAR_FRAME_ID=${LIDAR_FRAME_ID:-lidar}
       - CAMERA_FRAME_ID=${CAMERA_FRAME_ID:-camera}
+      - ROS_DOMAIN_ID=${ROS_DOMAIN_ID:-0}
 
     deploy:
       resources:
@@ -43,6 +64,7 @@ services:
 
     depends_on:
       - vnc
+      - bag-player
 
     ipc: "service:vnc"
 
