@@ -1,17 +1,36 @@
 services:
+  vnc:
+    image: lcas.lincoln.ac.uk/vnc
+    volumes:
+      - x11:/tmp/.X11-unix
+    networks:
+      - mdpcalib_net
+    stdin_open: true
+    tty: true
+    ipc: shareable
+
   mdpcalib:
-    image: ${MDPCALIB_IMAGE:-ghcr.io/lcas/mdpcalib:latest}
+    build:
+      context: .
+    image: ghcr.io/lcas/mdpcalib:latest
     volumes:
       # your data volume (set DATA_PATH in your .env file)
       - ${DATA_PATH:-./data}:/data
 
-      # required x-forwarding
-      - /tmp/.X11-unix:/tmp/.X11-unix
+      # X11 socket shared with the VNC service
+      - x11:/tmp/.X11-unix
 
     environment:
-      - DISPLAY=${DISPLAY:-:0}
-      - XAUTHORITY=${XAUTHORITY:-}
+      - DISPLAY=:1.0
       - NVIDIA_DRIVER_CAPABILITIES=all
+
+      # ROS 2 sensor topics — override in your .env file as needed
+      - ROS2_CAMERA_IMAGE_TOPIC=${ROS2_CAMERA_IMAGE_TOPIC:-/camera/image_raw}
+      - ROS2_CAMERA_INFO_TOPIC=${ROS2_CAMERA_INFO_TOPIC:-/camera/camera_info}
+      - ROS2_LIDAR_POINTS_TOPIC=${ROS2_LIDAR_POINTS_TOPIC:-/points_raw}
+      - ROS2_IMU_TOPIC=${ROS2_IMU_TOPIC:-/imu/data}
+      - LIDAR_FRAME_ID=${LIDAR_FRAME_ID:-lidar}
+      - CAMERA_FRAME_ID=${CAMERA_FRAME_ID:-camera}
 
     deploy:
       resources:
@@ -19,7 +38,21 @@ services:
           devices:
             - capabilities: [ gpu ]
 
-    network_mode: host
+    networks:
+      - mdpcalib_net
+
+    depends_on:
+      - vnc
+
+    ipc: "service:vnc"
+
+    command: bash /root/catkin_ws/src/mdpcalib/pose_synchronizer/scripts/start_ros2_calibration.sh
 
     tty: true
     stdin_open: true
+
+volumes:
+  x11:
+
+networks:
+  mdpcalib_net:

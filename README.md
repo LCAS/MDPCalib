@@ -48,53 +48,47 @@ ghcr.io/lcas/mdpcalib:latest       # latest build from main
 ghcr.io/lcas/mdpcalib:<version>    # e.g. ghcr.io/lcas/mdpcalib:1.2.3
 ```
 
+The compose stack includes a VNC service ([`lcas.lincoln.ac.uk/vnc`](https://github.com/LCAS/ros2_pkg_template)) so no local X11 display or `xhost` configuration is required.
+
 ##### Quick start (no source checkout required)
 
-1. Download the compose file:
+1. Download the compose file and example environment:
    ```bash
    curl -O https://raw.githubusercontent.com/LCAS/MDPCalib/main/docker-compose.yaml
-   ```
-2. Create a `.env` file from the provided example:
-   ```bash
    curl -O https://raw.githubusercontent.com/LCAS/MDPCalib/main/.env.example
    cp .env.example .env
-   # Edit .env (not .env.example) and set DATA_PATH to your local data directory
    ```
-3. Allow GUI applications (e.g. RViz) to connect to your display:
+2. Edit `.env` and set at least `DATA_PATH` and the ROS 2 topic names for your robot.
+3. Start the full stack (VNC + calibration):
    ```bash
-   xhost +local:docker
+   docker compose up
    ```
-4. Start the container:
-   ```bash
-   docker compose run -it mdpcalib
-   ```
+
+The calibration runs automatically on `docker compose up`. Logs are written to
+`$DATA_PATH/runtime_logs/`. The final calibration result is written to
+`$DATA_PATH/calibration/ros2/extrinsics.yaml`.
 
 The `.env` file controls the following variables (see [`.env.example`](.env.example) for documentation):
 
 | Variable | Default | Description |
 |---|---|---|
-| `MDPCALIB_IMAGE` | `ghcr.io/lcas/mdpcalib:latest` | Docker image to use |
 | `DATA_PATH` | `./data` | Host path mounted to `/data` inside the container |
-| `DISPLAY` | `:0` | X11 display for GUI tools |
-| `XAUTHORITY` | *(empty)* | X11 authority file (optional) |
+| `ROS2_CAMERA_IMAGE_TOPIC` | `/camera/image_raw` | ROS 2 camera image topic |
+| `ROS2_CAMERA_INFO_TOPIC` | `/camera/camera_info` | ROS 2 camera info topic |
+| `ROS2_LIDAR_POINTS_TOPIC` | `/points_raw` | ROS 2 LiDAR point cloud topic |
+| `ROS2_IMU_TOPIC` | `/imu/data` | ROS 2 IMU topic |
+| `LIDAR_FRAME_ID` | `lidar` | LiDAR frame ID in the exported YAML |
+| `CAMERA_FRAME_ID` | `camera` | Camera frame ID in the exported YAML |
 
 ##### Building the image locally (for development)
 
-To build the image from source instead of pulling the pre-built one, create a
-`docker-compose.override.yml` alongside `docker-compose.yaml`:
+The compose file includes a `build:` context pointing to the repository root, so you
+can build the image directly without any additional override file:
 
-```yaml
-services:
-  mdpcalib:
-    build:
-      context: .
-    volumes:
-      # mount the local source tree so changes are reflected immediately
-      - ./src:/root/catkin_ws/src/mdpcalib
+```bash
+docker compose build
+docker compose up
 ```
-
-Then run `docker compose build` to build, or `docker compose run -it mdpcalib` to
-start the container.  Docker Compose automatically merges the override file.
 
 - Connect to a running container: `docker compose exec -it mdpcalib bash`
 

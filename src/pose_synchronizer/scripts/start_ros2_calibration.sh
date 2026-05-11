@@ -63,7 +63,11 @@ if [[ "${ENABLE_ROS2_BRIDGE:-true}" != "false" ]]; then
 
     echo "[mdpcalib] Starting ros1_bridge dynamic bridge..."
     source /opt/ros/noetic/setup.bash
+    # ROS 2 setup scripts reference variables without defaults; temporarily
+    # disable nounset so sourcing them does not abort under set -euo pipefail.
+    set +u
     source "/opt/ros/${ROS2_DISTRO}/setup.bash"
+    set -u
     ros2 run ros1_bridge dynamic_bridge --bridge-all-topics >"${MDPCALIB_RUNTIME_LOG_DIR}/ros1_bridge.log" 2>&1 &
     BRIDGE_PID=$!
     sleep 2
