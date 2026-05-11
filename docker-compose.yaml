@@ -16,12 +16,14 @@ services:
       context: ./bag-player
     image: ghcr.io/lcas/mdpcalib-bag-player:latest
     volumes:
-      # your data volume (set DATA_PATH in your .env file); the rosbag2 folder
-      # is expected at $DATA_PATH/bag (override with BAG_PATH).
-      - ${DATA_PATH:-./data}:/data
+      # Host directory containing your rosbag2 folders.
+      # Defaults to $HOME/rosbags on the host; override with ROSBAG_PATH in .env.
+      - ${ROSBAG_PATH:-${HOME}/rosbags}:/rosbags
     environment:
-      - BAG_PATH=${BAG_PATH:-/data/bag}
-      - BAG_LOOP=${BAG_LOOP:-false}
+      # Path inside the container to the rosbag2 folder to play.
+      - BAG_PATH=${BAG_PATH:-/rosbags}
+      # Loop the bag by default so calibration has time to complete.
+      - BAG_LOOP=${BAG_LOOP:-true}
       - BAG_RATE=${BAG_RATE:-1.0}
       - ROS_DOMAIN_ID=${ROS_DOMAIN_ID:-0}
     networks:
@@ -34,7 +36,8 @@ services:
       context: .
     image: ghcr.io/lcas/mdpcalib:latest
     volumes:
-      # your data volume (set DATA_PATH in your .env file)
+      # Calibration data: model weights (cmrnext/) and output (calibration/).
+      # This is separate from the rosbag data.
       - ${DATA_PATH:-./data}:/data
 
       # X11 socket shared with the VNC service

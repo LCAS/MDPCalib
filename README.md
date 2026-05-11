@@ -50,9 +50,20 @@ ghcr.io/lcas/mdpcalib:<version>    # e.g. ghcr.io/lcas/mdpcalib:1.2.3
 
 The compose stack includes a VNC service ([`lcas.lincoln.ac.uk/vnc`](https://github.com/LCAS/ros2_pkg_template)) so no local X11 display or `xhost` configuration is required. The VNC viewer is accessible at **http://localhost:5801**.
 
+##### Data prerequisites
+
+Before running, ensure you have:
+- **CMRNext model weights** — download the `.tar` files and place them in `$DATA_PATH/cmrnext/`:
+  - `cmrnext-calib-LEnc-iter1.tar`
+  - `cmrnext-calib-LEnc-iter5.tar`
+  - `cmrnext-calib-LEnc-iter6.tar`
+- **ros2bag** — place your rosbag2 folder inside `$HOME/rosbags/` (or set `ROSBAG_PATH` in `.env`)
+
+Rosbag data and calibration data are kept in separate directories and volumes.
+
 ##### Quick start — calibrate from a ros2bag
 
-The `bag-player` service plays a ros2bag folder automatically. The calibration runs against the replayed data.
+The `bag-player` service plays a ros2bag folder automatically. The bag loops by default so the calibration stack has enough time to complete.
 
 1. Download the compose file and example environment:
    ```bash
@@ -61,8 +72,8 @@ The `bag-player` service plays a ros2bag folder automatically. The calibration r
    cp .env.example .env
    ```
 2. Edit `.env`:
-   - Set `DATA_PATH` to the parent of your data directory.
-   - Place your rosbag2 folder at `$DATA_PATH/bag/` (or override `BAG_PATH`).
+   - Set `DATA_PATH` to the directory containing your CMRNext model weights and calibration output.
+   - Place your rosbag2 folder(s) in `$HOME/rosbags/` (or override `ROSBAG_PATH`).
    - Set the ROS 2 topic names to match what is recorded in your bag.
 3. Start the full stack (VNC + bag player + calibration):
    ```bash
@@ -79,9 +90,10 @@ The `.env` file controls the following variables (see [`.env.example`](.env.exam
 
 | Variable | Default | Description |
 |---|---|---|
-| `DATA_PATH` | `./data` | Host path mounted to `/data` inside all containers |
-| `BAG_PATH` | `/data/bag` | Path inside the container to the rosbag2 folder |
-| `BAG_LOOP` | `false` | Set to `true` to loop the bag |
+| `DATA_PATH` | `./data` | Host path for calibration data (model weights + output) |
+| `ROSBAG_PATH` | `$HOME/rosbags` | Host directory mounted as `/rosbags` in the bag-player container |
+| `BAG_PATH` | `/rosbags` | Path inside the container to the rosbag2 folder to play |
+| `BAG_LOOP` | `true` | Set to `false` to play once and exit |
 | `BAG_RATE` | `1.0` | Playback rate multiplier |
 | `ROS2_CAMERA_IMAGE_TOPIC` | `/camera/image_raw` | Camera image topic in the bag |
 | `ROS2_CAMERA_INFO_TOPIC` | `/camera/camera_info` | Camera info topic in the bag |

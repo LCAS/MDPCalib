@@ -1,10 +1,10 @@
 #!/usr/bin/env bash
 # Entry-point for the bag-player container.
-# Plays a ros2bag folder and exits when playback finishes (or loops if BAG_LOOP=true).
+# Plays a ros2bag folder and loops until stopped (or until BAG_LOOP=false).
 #
 # Environment variables:
-#   BAG_PATH  — absolute path inside the container to the rosbag2 folder (default: /data/bag)
-#   BAG_LOOP  — set to "true" to loop the bag indefinitely (default: false)
+#   BAG_PATH  — absolute path inside the container to the rosbag2 folder (default: /rosbags)
+#   BAG_LOOP  — set to "false" to play once and exit (default: true)
 #   BAG_RATE  — playback rate multiplier, e.g. 0.5 for half speed (default: 1.0)
 
 set -euo pipefail
@@ -15,8 +15,8 @@ set +u
 source /opt/ros/humble/setup.bash
 set -u
 
-BAG_PATH="${BAG_PATH:-/data/bag}"
-BAG_LOOP="${BAG_LOOP:-false}"
+BAG_PATH="${BAG_PATH:-/rosbags}"
+BAG_LOOP="${BAG_LOOP:-true}"
 BAG_RATE="${BAG_RATE:-1.0}"
 
 if [[ ! -d "${BAG_PATH}" ]]; then

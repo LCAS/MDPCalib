@@ -1,4 +1,4 @@
-name: Build and Push Docker Images
+name: Build and Push Docker Image
 
 on:
   push:
@@ -36,7 +36,7 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Extract metadata (tags, labels) for Docker — mdpcalib
+      - name: Extract metadata (tags, labels) for Docker
         id: meta
         uses: docker/metadata-action@v5
         with:
@@ -47,34 +47,13 @@ jobs:
             type=semver,pattern={{major}}.{{minor}}
             type=raw,value=latest,enable={{is_default_branch}}
 
-      - name: Build and push Docker image — mdpcalib
+      - name: Build and push Docker image
         uses: docker/build-push-action@v6
         with:
           context: .
           push: true
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
-          cache-from: type=gha,scope=mdpcalib
-          cache-to: type=gha,mode=max,scope=mdpcalib
-
-      - name: Extract metadata (tags, labels) for Docker — bag-player
-        id: meta-bag-player
-        uses: docker/metadata-action@v5
-        with:
-          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}-bag-player
-          tags: |
-            type=ref,event=branch
-            type=semver,pattern={{version}}
-            type=semver,pattern={{major}}.{{minor}}
-            type=raw,value=latest,enable={{is_default_branch}}
-
-      - name: Build and push Docker image — bag-player
-        uses: docker/build-push-action@v6
-        with:
-          context: ./bag-player
-          push: true
-          tags: ${{ steps.meta-bag-player.outputs.tags }}
-          labels: ${{ steps.meta-bag-player.outputs.labels }}
-          cache-from: type=gha,scope=bag-player
-          cache-to: type=gha,mode=max,scope=bag-player
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
 
