@@ -52,18 +52,21 @@ The compose stack includes a VNC service ([`lcas.lincoln.ac.uk/vnc`](https://git
 
 ##### Data prerequisites
 
-Before running, ensure you have:
-- **CMRNext model weights** — download the `.tar` files and place them in `$DATA_PATH/cmrnext/`:
-  - `cmrnext-calib-LEnc-iter1.tar`
-  - `cmrnext-calib-LEnc-iter5.tar`
-  - `cmrnext-calib-LEnc-iter6.tar`
-- **ros2bag** — place your rosbag2 folder inside `$HOME/rosbags/` (or set `ROSBAG_PATH` in `.env`)
+Two separate host directories are required — keep them distinct to avoid conflicts:
 
-Rosbag data and calibration data are kept in separate directories and volumes.
+| Directory | Configured by | Contents |
+|---|---|---|
+| Calibration data | `CALIBRATION_DATA_PATH` | CMRNext model weights (auto-downloaded if absent), calibration output |
+| ROS bags | `ROSBAG_PATH` | Your ros2bag folder(s) |
+
+- **CMRNext model weights** are downloaded automatically on first run from  
+  `https://calibration.cs.uni-freiburg.de/downloads/cmrnext_weights.zip`  
+  and stored in `$CALIBRATION_DATA_PATH/cmrnext/`. No manual download needed.
+- **ros2bag** — place your rosbag2 folder inside `$HOME/rosbags/` (or set `ROSBAG_PATH` in `.env`)
 
 ##### Quick start — calibrate from a ros2bag
 
-The `bag-player` service plays a ros2bag folder automatically. The bag loops by default so the calibration stack has enough time to complete.
+The `bag-player` service plays a ros2bag folder automatically. The bag loops by default so the calibration stack has enough time to complete. CMRNext model weights are downloaded automatically on first startup.
 
 1. Download the compose file and example environment:
    ```bash
@@ -72,7 +75,7 @@ The `bag-player` service plays a ros2bag folder automatically. The bag loops by 
    cp .env.example .env
    ```
 2. Edit `.env`:
-   - Set `DATA_PATH` to the directory containing your CMRNext model weights and calibration output.
+   - Set `CALIBRATION_DATA_PATH` to an empty directory for calibration output (weights are downloaded there automatically).
    - Place your rosbag2 folder(s) in `$HOME/rosbags/` (or override `ROSBAG_PATH`).
    - Set the ROS 2 topic names to match what is recorded in your bag.
 3. Start the full stack (VNC + bag player + calibration):
@@ -81,8 +84,8 @@ The `bag-player` service plays a ros2bag folder automatically. The bag loops by 
    ```
 
 The calibration starts automatically once the bag begins playing. Logs are written to
-`$DATA_PATH/runtime_logs/`. The final calibration result is written to
-`$DATA_PATH/calibration/ros2/extrinsics.yaml`.
+`$CALIBRATION_DATA_PATH/runtime_logs/`. The final calibration result is written to
+`$CALIBRATION_DATA_PATH/calibration/ros2/extrinsics.yaml`.
 
 Open **http://localhost:5801** in a browser to view the RViz / GUI output via VNC.
 
@@ -90,7 +93,7 @@ The `.env` file controls the following variables (see [`.env.example`](.env.exam
 
 | Variable | Default | Description |
 |---|---|---|
-| `DATA_PATH` | `./data` | Host path for calibration data (model weights + output) |
+| `CALIBRATION_DATA_PATH` | `./calibration-data` | Host path for calibration output + model weights (auto-downloaded) |
 | `ROSBAG_PATH` | `$HOME/rosbags` | Host directory mounted as `/rosbags` in the bag-player container |
 | `BAG_PATH` | `/rosbags` | Path inside the container to the rosbag2 folder to play |
 | `BAG_LOOP` | `true` | Set to `false` to play once and exit |
@@ -157,7 +160,11 @@ In the public release of our MDPCalib, we provide instructions for running camer
 
 #### Downloading model weights 🏋️
 
-Please download the model weights of CMRNext from this link and store them under: `/data/cmrnext`.
+When using the Docker compose stack, model weights are **downloaded automatically** on first run
+from `https://calibration.cs.uni-freiburg.de/downloads/cmrnext_weights.zip` and stored in
+`$CALIBRATION_DATA_PATH/cmrnext/`.
+
+For manual / non-Docker runs, download the weights and store them under `/data/cmrnext`:
 - Model weights: https://calibration.cs.uni-freiburg.de/downloads/cmrnext_weights.zip
 
 ### 🏃 Running the calibration

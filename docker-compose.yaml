@@ -37,8 +37,8 @@ services:
     image: ghcr.io/lcas/mdpcalib:latest
     volumes:
       # Calibration data: model weights (cmrnext/) and output (calibration/).
-      # This is separate from the rosbag data.
-      - ${DATA_PATH:-./data}:/data
+      # Intentionally separate from the rosbag data (ROSBAG_PATH → /rosbags).
+      - ${CALIBRATION_DATA_PATH:-./calibration-data}:/data
 
       # X11 socket shared with the VNC service
       - x11:/tmp/.X11-unix

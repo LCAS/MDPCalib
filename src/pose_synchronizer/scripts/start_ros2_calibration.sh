@@ -74,6 +74,53 @@ if [[ "${ENABLE_ROS2_BRIDGE:-true}" != "false" ]]; then
 fi
 
 echo "[mdpcalib] Launching live ROS 2 calibration stack..."
+
+# ---------------------------------------------------------------------------
+# CMRNext model weights — download automatically if not already present.
+# All three weights must share the same directory (CMRNEXT_WEIGHTS_DIR).
+# ---------------------------------------------------------------------------
+CMRNEXT_WEIGHTS_DIR="${CMRNEXT_WEIGHTS_DIR:-/data/cmrnext}"
+CMRNEXT_WEIGHTS_URL="${CMRNEXT_WEIGHTS_URL:-https://calibration.cs.uni-freiburg.de/downloads/cmrnext_weights.zip}"
+
+_weight1="${CMRNEXT_WEIGHT_1:-${CMRNEXT_WEIGHTS_DIR}/cmrnext-calib-LEnc-iter1.tar}"
+_weight2="${CMRNEXT_WEIGHT_2:-${CMRNEXT_WEIGHTS_DIR}/cmrnext-calib-LEnc-iter5.tar}"
+_weight3="${CMRNEXT_WEIGHT_3:-${CMRNEXT_WEIGHTS_DIR}/cmrnext-calib-LEnc-iter6.tar}"
+
+if [[ ! -f "${_weight1}" ]] || [[ ! -f "${_weight2}" ]] || [[ ! -f "${_weight3}" ]]; then
+    echo "[mdpcalib] CMRNext model weights not found in '${CMRNEXT_WEIGHTS_DIR}'."
+    echo "[mdpcalib] Downloading from ${CMRNEXT_WEIGHTS_URL} ..."
+    mkdir -p "${CMRNEXT_WEIGHTS_DIR}"
+    _tmp_zip="$(mktemp /tmp/cmrnext_weights_XXXXXX.zip)"
+    if curl -fSL --retry 3 --retry-delay 5 -o "${_tmp_zip}" "${CMRNEXT_WEIGHTS_URL}"; then
+        if ! unzip -o -j -d "${CMRNEXT_WEIGHTS_DIR}" "${_tmp_zip}" '*.tar'; then
+            rm -f "${_tmp_zip}"
+            echo "[mdpcalib] ERROR: Failed to unzip model weights archive from ${CMRNEXT_WEIGHTS_URL}." >&2
+            exit 1
+        fi
+        rm -f "${_tmp_zip}"
+        # Verify the expected files were actually extracted
+        _missing=()
+        [[ ! -f "${_weight1}" ]] && _missing+=("${_weight1}")
+        [[ ! -f "${_weight2}" ]] && _missing+=("${_weight2}")
+        [[ ! -f "${_weight3}" ]] && _missing+=("${_weight3}")
+        if [[ ${#_missing[@]} -gt 0 ]]; then
+            echo "[mdpcalib] ERROR: Download succeeded but the following weight files are missing after extraction:" >&2
+            printf '[mdpcalib]   %s\n' "${_missing[@]}" >&2
+            echo "[mdpcalib] Expected files: cmrnext-calib-LEnc-iter1.tar, cmrnext-calib-LEnc-iter5.tar, cmrnext-calib-LEnc-iter6.tar" >&2
+            echo "[mdpcalib] The archive may not contain the expected *.tar files." >&2
+            exit 1
+        fi
+        echo "[mdpcalib] CMRNext model weights downloaded to '${CMRNEXT_WEIGHTS_DIR}'."
+    else
+        rm -f "${_tmp_zip}"
+        echo "[mdpcalib] ERROR: Failed to download model weights from ${CMRNEXT_WEIGHTS_URL}." >&2
+        echo "[mdpcalib] Please download manually and place *.tar files in '${CMRNEXT_WEIGHTS_DIR}'." >&2
+        echo "[mdpcalib] Download URL: ${CMRNEXT_WEIGHTS_URL}" >&2
+        exit 1
+    fi
+fi
+# ---------------------------------------------------------------------------
+
 source /opt/ros/noetic/setup.bash
 source /root/catkin_ws/devel/setup.bash
 roslaunch pose_synchronizer ros2_live_calibration.launch \
