@@ -10,13 +10,14 @@
 # container restarts skip the download step.
 #
 # Environment variables:
-#   KITTI_DIR         — container path for the named kitti volume (default: /kitti)
-#   KITTI_DATE        — recording date                            (default: 2011_10_03)
-#   KITTI_DRIVE       — drive number (zero-padded 4 digits)       (default: 0027)
-#   KITTI_CAMERA      — 'left' or 'right'                         (default: left)
-#   KITTI_SEQUENCE    — odometry sequence for velodyne download    (default: 00)
-#   BAG_RATE          — playback rate multiplier                   (default: 1.0)
-#   BAG_LOOP          — set to "false" to play once               (default: true)
+#   KITTI_DIR              — container path for the named kitti volume (default: /kitti)
+#   KITTI_DATE             — recording date                            (default: 2011_10_03)
+#   KITTI_DRIVE            — drive number (zero-padded 4 digits)       (default: 0027)
+#   KITTI_CAMERA           — 'left' or 'right'                         (default: left)
+#   KITTI_SEQUENCE         — odometry sequence for velodyne download    (default: 00)
+#   KITTI_FORCE_REBUILD    — set to "true" to force reconversion           (default: false)
+#   BAG_RATE               — playback rate multiplier                   (default: 1.0)
+#   BAG_LOOP               — set to "false" to play once               (default: true)
 #   ROS2_CAMERA_IMAGE_TOPIC   (default: /camera/image_raw)
 #   ROS2_CAMERA_INFO_TOPIC    (default: /camera/camera_info)
 #   ROS2_LIDAR_POINTS_TOPIC   (default: /points_raw)
@@ -35,6 +36,7 @@ KITTI_DATE="${KITTI_DATE:-2011_10_03}"
 KITTI_DRIVE="${KITTI_DRIVE:-0027}"
 KITTI_CAMERA="${KITTI_CAMERA:-left}"
 KITTI_SEQUENCE="${KITTI_SEQUENCE:-00}"
+KITTI_FORCE_REBUILD="${KITTI_FORCE_REBUILD:-false}"
 BAG_RATE="${BAG_RATE:-1.0}"
 BAG_LOOP="${BAG_LOOP:-true}"
 ROS2_CAMERA_IMAGE_TOPIC="${ROS2_CAMERA_IMAGE_TOPIC:-/camera/image_raw}"
@@ -44,6 +46,9 @@ ROS2_IMU_TOPIC="${ROS2_IMU_TOPIC:-/imu/data}"
 
 DRIVE_DIR="${KITTI_DIR}/${KITTI_DATE}/${KITTI_DATE}_drive_${KITTI_DRIVE}_sync"
 ROS2BAG_DIR="${KITTI_DIR}/ros2bag/kitti_${KITTI_DATE}_drive_${KITTI_DRIVE}_${KITTI_CAMERA}"
+# Sentinel file written only after a fully-successful conversion.
+# Its presence is the authoritative signal that the bag is complete.
+ROS2BAG_SENTINEL="${ROS2BAG_DIR}/.conversion_done"
 TMP_DIR="${KITTI_DIR}/.download_tmp"
 
 mkdir -p "${KITTI_DIR}" "${TMP_DIR}"
@@ -137,7 +142,18 @@ fi
 # -------------------------------------------------------------------------
 # 3. Convert KITTI raw data → ROS 2 bag (skip if already done)
 # -------------------------------------------------------------------------
-if [[ ! -d "${ROS2BAG_DIR}" ]]; then
+# KITTI_FORCE_REBUILD=true wipes any existing output so conversion re-runs.
+if [[ "${KITTI_FORCE_REBUILD}" == "true" ]]; then
+    echo "[bag-player/kitti] KITTI_FORCE_REBUILD=true — removing existing bag for rebuild."
+    rm -rf "${ROS2BAG_DIR}"
+fi
+
+if [[ ! -f "${ROS2BAG_SENTINEL}" ]]; then
+    # Remove any partial/corrupt conversion output from a previous crashed run.
+    if [[ -d "${ROS2BAG_DIR}" ]]; then
+        echo "[bag-player/kitti] Partial bag detected (no sentinel) — removing and reconverting."
+        rm -rf "${ROS2BAG_DIR}"
+    fi
     echo "[bag-player/kitti] Converting KITTI data to ROS 2 bag — this may take several minutes ..."
     python3 /workspace/kitti_to_ros2bag.py \
         --kitti-dir  "${KITTI_DIR}" \
@@ -149,8 +165,11 @@ if [[ ! -d "${ROS2BAG_DIR}" ]]; then
         --camera-info-topic "${ROS2_CAMERA_INFO_TOPIC}" \
         --lidar-topic       "${ROS2_LIDAR_POINTS_TOPIC}" \
         --imu-topic         "${ROS2_IMU_TOPIC}"
+    # Only written on successful completion — guards against partial bags.
+    touch "${ROS2BAG_SENTINEL}"
 else
-    echo "[bag-player/kitti] ROS 2 bag already exists at '${ROS2BAG_DIR}', skipping conversion."
+    echo "[bag-player/kitti] Complete ROS 2 bag found at '${ROS2BAG_DIR}', skipping conversion."
+    echo "[bag-player/kitti]   (Set KITTI_FORCE_REBUILD=true to force a rebuild.)"
 fi
 
 # -------------------------------------------------------------------------

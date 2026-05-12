@@ -42,6 +42,10 @@ services:
       - KITTI_CAMERA=${KITTI_CAMERA:-left}
       # Odometry sequence number for motion-compensated velodyne (default: 00)
       - KITTI_SEQUENCE=${KITTI_SEQUENCE:-00}
+      # Set to "true" to delete the cached ros2bag and re-convert from raw data.
+      # Useful when KITTI_DATE/KITTI_DRIVE/KITTI_CAMERA is changed.  Leave
+      # unset (or "false") for the normal skip-if-complete behaviour.
+      - KITTI_FORCE_REBUILD=${KITTI_FORCE_REBUILD:-false}
 
       # --- sensor topics (shared by both modes) ---
       - ROS2_CAMERA_IMAGE_TOPIC=${ROS2_CAMERA_IMAGE_TOPIC:-/camera/image_raw}
