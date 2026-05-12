@@ -162,6 +162,8 @@ if [[ "${BAG_LOOP}" == "true" ]]; then
 fi
 
 echo "[bag-player/kitti] Playing KITTI ros2bag '${ROS2BAG_DIR}' at rate ${BAG_RATE} (loop=${BAG_LOOP}) ..."
+# Signal to docker-compose that all downloads/conversion are done and playback is starting.
+touch /tmp/bag_player_ready
 exec ros2 bag play "${ROS2BAG_DIR}" \
     --clock \
     --rate "${BAG_RATE}" \

@@ -40,6 +40,8 @@ if [[ "${BAG_LOOP}" == "true" ]]; then
 fi
 
 echo "[bag-player] Playing ros2bag '${BAG_PATH}' at rate ${BAG_RATE} (loop=${BAG_LOOP}) ..."
+# Signal to docker-compose that preparation is done and playback is starting.
+touch /tmp/bag_player_ready
 exec ros2 bag play "${BAG_PATH}" \
     --clock \
     --rate "${BAG_RATE}" \

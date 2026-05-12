@@ -50,6 +50,17 @@ services:
       - ROS2_IMU_TOPIC=${ROS2_IMU_TOPIC:-/imu/data}
 
       - ROS_DOMAIN_ID=${ROS_DOMAIN_ID:-0}
+    healthcheck:
+      # Becomes healthy only once all downloads/conversions are done and
+      # ros2 bag play is about to start.  mdpcalib depends on this so the
+      # calibration stack never starts before data is flowing.
+      test: ["CMD", "test", "-f", "/tmp/bag_player_ready"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+      # Allow up to 4 hours for large KITTI downloads before the healthcheck
+      # starts counting failures (ros2bag mode is typically ready in seconds).
+      start_period: 14400s
     networks:
       - mdpcalib_net
     depends_on:
@@ -92,8 +103,10 @@ services:
       - mdpcalib_net
 
     depends_on:
-      - vnc
-      - bag-player
+      vnc:
+        condition: service_started
+      bag-player:
+        condition: service_healthy
 
     ipc: "service:vnc"
 
