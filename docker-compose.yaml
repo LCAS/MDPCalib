@@ -1,21 +1,101 @@
 services:
+  vnc:
+    image: lcas.lincoln.ac.uk/vnc
+    volumes:
+      - x11:/tmp/.X11-unix
+    networks:
+      - mdpcalib_net
+    ports:
+      - "5801:5801"
+    stdin_open: true
+    tty: true
+    ipc: shareable
+
+  bag-player:
+    build:
+      context: ./bag-player
+    image: ghcr.io/lcas/mdpcalib-bag-player:latest
+    volumes:
+      # Mode 'ros2bag' (default): host directory containing your rosbag2 folders.
+      # Defaults to $HOME/rosbags on the host; override with ROSBAG_PATH in .env.
+      - ${ROSBAG_PATH:-${HOME}/rosbags}:/rosbags
+      # Mode 'kitti': named Docker volume for KITTI raw data + converted ros2bag.
+      # Data is downloaded automatically on first run and cached here.
+      # Use a named volume (not a bind mount) so Docker manages the lifecycle.
+      - kitti_data:/kitti
+    environment:
+      # Select playback mode: 'ros2bag' (default) or 'kitti'
+      - PLAYBACK_MODE=${PLAYBACK_MODE:-ros2bag}
+
+      # --- ros2bag mode variables ---
+      # Path inside the container to the rosbag2 folder to play.
+      - BAG_PATH=${BAG_PATH:-/rosbags}
+      # Loop the bag by default so calibration has time to complete.
+      - BAG_LOOP=${BAG_LOOP:-true}
+      - BAG_RATE=${BAG_RATE:-1.0}
+
+      # --- kitti mode variables ---
+      # KITTI recording date and drive (default: sequence 00 = 2011_10_03 drive 0027)
+      - KITTI_DATE=${KITTI_DATE:-2011_10_03}
+      - KITTI_DRIVE=${KITTI_DRIVE:-0027}
+      # Which colour camera to use: 'left' or 'right'
+      - KITTI_CAMERA=${KITTI_CAMERA:-left}
+      # Odometry sequence number for motion-compensated velodyne (default: 00)
+      - KITTI_SEQUENCE=${KITTI_SEQUENCE:-00}
+      # Set to "true" to delete the cached ros2bag and re-convert from raw data.
+      # Useful when KITTI_DATE/KITTI_DRIVE/KITTI_CAMERA is changed.  Leave
+      # unset (or "false") for the normal skip-if-complete behaviour.
+      - KITTI_FORCE_REBUILD=${KITTI_FORCE_REBUILD:-false}
+
+      # --- sensor topics (shared by both modes) ---
+      - ROS2_CAMERA_IMAGE_TOPIC=${ROS2_CAMERA_IMAGE_TOPIC:-/camera/image_raw}
+      - ROS2_CAMERA_INFO_TOPIC=${ROS2_CAMERA_INFO_TOPIC:-/camera/camera_info}
+      - ROS2_LIDAR_POINTS_TOPIC=${ROS2_LIDAR_POINTS_TOPIC:-/points_raw}
+      - ROS2_IMU_TOPIC=${ROS2_IMU_TOPIC:-/imu/data}
+
+      - ROS_DOMAIN_ID=${ROS_DOMAIN_ID:-0}
+    healthcheck:
+      # Becomes healthy only once all downloads/conversions are done and
+      # ros2 bag play is about to start.  mdpcalib depends on this so the
+      # calibration stack never starts before data is flowing.
+      test: ["CMD", "test", "-f", "/tmp/bag_player_ready"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+      # Allow up to 4 hours for large KITTI downloads before the healthcheck
+      # starts counting failures (ros2bag mode is typically ready in seconds).
+      start_period: 14400s
+    networks:
+      - mdpcalib_net
+    depends_on:
+      - vnc
+
   mdpcalib:
     build:
       context: .
+    image: ghcr.io/lcas/mdpcalib:latest
     volumes:
-      # mount this code
-      - ./src:/root/catkin_ws/src/mdpcalib
+      # Calibration data: model weights (cmrnext/) and output (calibration/).
+      # Intentionally separate from the rosbag data (ROSBAG_PATH → /rosbags).
+      - ${CALIBRATION_DATA_PATH:-./calibration-data}:/data
 
-      # your data volume goes here
-
-
-      # required x-forwarding
-      - /tmp/.X11-unix:/tmp/.X11-unix
+      # X11 socket shared with the VNC service
+      - x11:/tmp/.X11-unix
 
     environment:
-      - DISPLAY
-      - XAUTHORITY
+      - DISPLAY=:1.0
       - NVIDIA_DRIVER_CAPABILITIES=all
+
+      # ROS 2 sensor topics — override in your .env file as needed
+      - ROS2_CAMERA_IMAGE_TOPIC=${ROS2_CAMERA_IMAGE_TOPIC:-/camera/image_raw}
+      - ROS2_CAMERA_INFO_TOPIC=${ROS2_CAMERA_INFO_TOPIC:-/camera/camera_info}
+      - ROS2_LIDAR_POINTS_TOPIC=${ROS2_LIDAR_POINTS_TOPIC:-/points_raw}
+      - ROS2_IMU_TOPIC=${ROS2_IMU_TOPIC:-/imu/data}
+      - LIDAR_FRAME_ID=${LIDAR_FRAME_ID:-lidar}
+      - CAMERA_FRAME_ID=${CAMERA_FRAME_ID:-camera}
+      - ROS_DOMAIN_ID=${ROS_DOMAIN_ID:-0}
+      # FAST-LO sensor config — use velodyne.yaml for KITTI (HDL-64E), ouster.yaml (default) for Ouster
+      - FAST_LO_CONFIG_FILE=${FAST_LO_CONFIG_FILE:-}
 
     deploy:
       resources:
@@ -23,7 +103,25 @@ services:
           devices:
             - capabilities: [ gpu ]
 
-    network_mode: host
+    networks:
+      - mdpcalib_net
+
+    depends_on:
+      vnc:
+        condition: service_started
+      bag-player:
+        condition: service_healthy
+
+    ipc: "service:vnc"
+
+    command: bash /root/catkin_ws/src/mdpcalib/pose_synchronizer/scripts/start_ros2_calibration.sh
 
     tty: true
     stdin_open: true
+
+volumes:
+  x11:
+  kitti_data:
+
+networks:
+  mdpcalib_net:

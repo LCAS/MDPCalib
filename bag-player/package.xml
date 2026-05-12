@@ -1,0 +1,25 @@
+<?xml version="1.0"?>
+<package format="3">
+  <name>mdpcalib_bag_player</name>
+  <version>0.0.1</version>
+  <description>ROS 2 bag player helper for MDPCalib — plays a rosbag2 folder and publishes sensor topics consumed by the mdpcalib calibration stack.</description>
+
+  <maintainer email="voedisch@cs.uni-freiburg.de">MDPCalib</maintainer>
+  <license>GPL-3.0</license>
+
+  <!-- rosbag2 playback -->
+  <exec_depend>ros2bag</exec_depend>
+  <exec_depend>rosbag2_storage_default_plugins</exec_depend>
+  <exec_depend>rosbag2_transport</exec_depend>
+
+  <!-- rosbag2 Python API for KITTI → ros2bag conversion -->
+  <exec_depend>rosbag2_py</exec_depend>
+
+  <!-- ROS 2 message types used in KITTI conversion -->
+  <exec_depend>sensor_msgs</exec_depend>
+  <exec_depend>std_msgs</exec_depend>
+  <exec_depend>builtin_interfaces</exec_depend>
+
+  <!-- OpenCV Python bindings for reading KITTI images -->
+  <exec_depend>python3-opencv</exec_depend>
+</package>

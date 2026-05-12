@@ -25,3 +25,6 @@ src/CMRNet/visibility_pkg/build/
 src/CMRNet/visibility_pkg/dist/
 __pycache__
 src/FAST_LO/Log/*
+
+# local Docker Compose environment — never commit real credentials
+.env

@@ -41,9 +41,106 @@ Sensor setups of robotic platforms commonly include both camera and LiDAR as the
 
 Tested with `Docker version 28.0.1` and `Docker Compose version v2.33.1`.
 
-- To build the image, run `docker compose build` in the root of this repository.
-- Prepare using GUIs in the container: `xhost +local:docker`.
-- Start container and mount rosbags: `docker compose run -v PATH_TO_DATA:/data -it mdpcalib`
+Pre-built images are published automatically to the GitHub Container Registry on every push to `main` and on every version tag:
+
+```
+ghcr.io/lcas/mdpcalib:latest       # latest build from main
+ghcr.io/lcas/mdpcalib:<version>    # e.g. ghcr.io/lcas/mdpcalib:1.2.3
+```
+
+The compose stack includes a VNC service ([`lcas.lincoln.ac.uk/vnc`](https://github.com/LCAS/ros2_pkg_template)) so no local X11 display or `xhost` configuration is required. The VNC viewer is accessible at **http://localhost:5801**.
+
+##### Data prerequisites
+
+Two separate host directories are required — keep them distinct to avoid conflicts:
+
+| Directory | Configured by | Contents |
+|---|---|---|
+| Calibration data | `CALIBRATION_DATA_PATH` | CMRNext model weights (auto-downloaded if absent), calibration output |
+| ROS bags | `ROSBAG_PATH` | Your ros2bag folder(s) |
+
+- **CMRNext model weights** are downloaded automatically on first run from  
+  `https://calibration.cs.uni-freiburg.de/downloads/cmrnext_weights.zip`  
+  and stored in `$CALIBRATION_DATA_PATH/cmrnext/`. No manual download needed.
+- **ros2bag** — place your rosbag2 folder inside `$HOME/rosbags/` (or set `ROSBAG_PATH` in `.env`)
+
+##### Quick start — calibrate from a ros2bag
+
+The `bag-player` service plays a ros2bag folder automatically. The bag loops by default so the calibration stack has enough time to complete. CMRNext model weights are downloaded automatically on first startup.
+
+1. Download the compose file and example environment:
+   ```bash
+   curl -O https://raw.githubusercontent.com/LCAS/MDPCalib/main/docker-compose.yaml
+   curl -O https://raw.githubusercontent.com/LCAS/MDPCalib/main/.env.example
+   cp .env.example .env
+   ```
+2. Edit `.env`:
+   - Set `CALIBRATION_DATA_PATH` to an empty directory for calibration output (weights are downloaded there automatically).
+   - Place your rosbag2 folder(s) in `$HOME/rosbags/` (or override `ROSBAG_PATH`).
+   - Set the ROS 2 topic names to match what is recorded in your bag.
+3. Start the full stack (VNC + bag player + calibration):
+   ```bash
+   docker compose up
+   ```
+
+The calibration starts automatically once the bag begins playing. Logs are written to
+`$CALIBRATION_DATA_PATH/runtime_logs/`. The final calibration result is written to
+`$CALIBRATION_DATA_PATH/calibration/ros2/extrinsics.yaml`.
+
+Open **http://localhost:5801** in a browser to view the RViz / GUI output via VNC.
+
+##### Quick start — calibrate from KITTI
+
+The `bag-player` service also supports a built-in KITTI mode that downloads the KITTI raw_synced dataset automatically, converts it to a ROS 2 bag, and plays it. All data is stored in the `kitti_data` named Docker volume — no host bind mount or manual download is required.
+
+> **⚠ Note:** The initial download is ~9 GB (raw sync + calibration + odometry velodyne). After the first run the data is cached in the Docker volume; subsequent `docker compose up` invocations skip both the download and the conversion step.
+
+1. Copy and edit `.env` as above, then add / uncomment:
+   ```ini
+   PLAYBACK_MODE=kitti
+   # Use the Velodyne HDL-64E FAST-LO config for KITTI:
+   FAST_LO_CONFIG_FILE=/root/catkin_ws/src/mdpcalib/FAST_LO/config/velodyne.yaml
+   ```
+2. Start the stack:
+   ```bash
+   docker compose up
+   ```
+   The bag-player will download the KITTI data into the `kitti_data` volume, convert it to a
+   ROS 2 bag, and start playback. The calibration stack starts automatically in `mdpcalib`.
+
+To change the KITTI sequence, override `KITTI_DATE`, `KITTI_DRIVE`, and `KITTI_SEQUENCE` in `.env`
+(see `.env.example` for details and the [KITTI mapping table](https://github.com/tomas789/kitti2bag/issues/10#issuecomment-352962278)).
+
+The `.env` file controls the following variables (see [`.env.example`](.env.example) for full documentation):
+
+| Variable | Default | Description |
+|---|---|---|
+| `CALIBRATION_DATA_PATH` | `./calibration-data` | Host path for calibration output + model weights (auto-downloaded) |
+| `PLAYBACK_MODE` | `ros2bag` | `ros2bag` — play from file; `kitti` — download and play KITTI |
+| `ROSBAG_PATH` | `$HOME/rosbags` | Host directory mounted as `/rosbags` in the bag-player (ros2bag mode) |
+| `BAG_PATH` | `/rosbags` | Path inside container to the rosbag2 folder (ros2bag mode) |
+| `BAG_LOOP` | `true` | Set to `false` to play once and exit |
+| `BAG_RATE` | `1.0` | Playback rate multiplier |
+| `KITTI_DATE` | `2011_10_03` | KITTI recording date (kitti mode) |
+| `KITTI_DRIVE` | `0027` | KITTI drive number, zero-padded (kitti mode) |
+| `KITTI_CAMERA` | `left` | Colour camera: `left` or `right` (kitti mode) |
+| `KITTI_SEQUENCE` | `00` | Odometry sequence for motion-compensated velodyne (kitti mode) |
+| `ROS2_CAMERA_IMAGE_TOPIC` | `/camera/image_raw` | Camera image topic |
+| `ROS2_CAMERA_INFO_TOPIC` | `/camera/camera_info` | Camera info topic |
+| `ROS2_LIDAR_POINTS_TOPIC` | `/points_raw` | LiDAR point cloud topic |
+| `ROS2_IMU_TOPIC` | `/imu/data` | IMU topic |
+| `LIDAR_FRAME_ID` | `lidar` | LiDAR frame ID in the exported YAML |
+| `CAMERA_FRAME_ID` | `camera` | Camera frame ID in the exported YAML |
+
+##### Building the images locally (for development)
+
+The compose file includes `build:` contexts for both the `mdpcalib` and `bag-player` services, so you can build everything from source:
+
+```bash
+docker compose build
+docker compose up
+```
+
 - Connect to a running container: `docker compose exec -it mdpcalib bash`
 
 
@@ -90,7 +187,11 @@ In the public release of our MDPCalib, we provide instructions for running camer
 
 #### Downloading model weights 🏋️
 
-Please download the model weights of CMRNext from this link and store them under: `/data/cmrnext`.
+When using the Docker compose stack, model weights are **downloaded automatically** on first run
+from `https://calibration.cs.uni-freiburg.de/downloads/cmrnext_weights.zip` and stored in
+`$CALIBRATION_DATA_PATH/cmrnext/`.
+
+For manual / non-Docker runs, download the weights and store them under `/data/cmrnext`:
 - Model weights: https://calibration.cs.uni-freiburg.de/downloads/cmrnext_weights.zip
 
 ### 🏃 Running the calibration
