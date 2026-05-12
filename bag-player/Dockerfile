@@ -26,7 +26,9 @@ RUN rm -rf /var/lib/apt/lists/* \
         python3-colcon-mixin \
     && rm -rf /var/lib/apt/lists/*
 
-RUN pip3 install --no-cache-dir pykitti progressbar2
+# Pin numpy<2: pykitti (and several ros2 packages) are compiled against
+# NumPy 1.x ABI and raise "cannot be run in NumPy 2.x" at runtime otherwise.
+RUN pip3 install --no-cache-dir "numpy<2" pykitti progressbar2
 
 COPY play_bag.sh play_kitti.sh kitti_to_ros2bag.py /workspace/
 RUN chmod +x /workspace/play_bag.sh /workspace/play_kitti.sh
