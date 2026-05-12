@@ -6,8 +6,6 @@ FROM ${BASE_IMAGE}
 ARG ROS_DISTRO
 ENV ROS_DISTRO=${ROS_DISTRO}
 
-USER root
-
 WORKDIR /workspace
 
 # Copy the package manifest so rosdep can install all declared dependencies.
@@ -19,6 +17,15 @@ RUN rosdep update --rosdistro "${ROS_DISTRO}" \
     && rm -rf /var/lib/apt/lists/*
 
 # Python packages required for KITTI → ros2bag conversion (no rosdep keys available)
+RUN rm -rf /var/lib/apt/lists/* \
+    && apt-get update --fix-missing \
+    && apt-get -y install --no-install-recommends --fix-missing \
+        python3 \
+        python3-pip \
+        python3-colcon-common-extensions \
+        python3-colcon-mixin \
+    && rm -rf /var/lib/apt/lists/*
+
 RUN pip3 install --no-cache-dir pykitti progressbar2
 
 COPY play_bag.sh play_kitti.sh kitti_to_ros2bag.py /workspace/
