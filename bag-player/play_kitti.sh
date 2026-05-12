@@ -49,16 +49,39 @@ TMP_DIR="${KITTI_DIR}/.download_tmp"
 mkdir -p "${KITTI_DIR}" "${TMP_DIR}"
 
 # -------------------------------------------------------------------------
-# Helper: download a file only if not already present
+# Helper: download a file, verify it, and cache it.
+# If the file already exists but fails integrity check (e.g. interrupted
+# download), it is deleted and re-downloaded automatically.
 # -------------------------------------------------------------------------
 _download() {
     local url="$1" dest="$2"
     if [[ -f "${dest}" ]]; then
-        echo "[bag-player/kitti] Cached: $(basename "${dest}")"
-        return
+        # Verify the existing file is a valid zip before trusting the cache.
+        if unzip -t "${dest}" >/dev/null 2>&1; then
+            echo "[bag-player/kitti] Cached (verified): $(basename "${dest}")"
+            return
+        else
+            echo "[bag-player/kitti] Cached file '$(basename "${dest}")' is corrupt or incomplete — re-downloading ..."
+            rm -f "${dest}"
+        fi
     fi
     echo "[bag-player/kitti] Downloading $(basename "${dest}") ..."
-    curl -fSL --retry 3 --retry-delay 10 -o "${dest}" "${url}"
+    # Download to a temp file first; only rename on success so a crash
+    # during download does not leave a partial file that looks valid-named.
+    local tmp_dest="${dest}.tmp"
+    rm -f "${tmp_dest}"
+    if ! curl -fSL --retry 3 --retry-delay 10 -o "${tmp_dest}" "${url}"; then
+        rm -f "${tmp_dest}"
+        echo "[bag-player/kitti] ERROR: curl download failed for '${url}'." >&2
+        exit 1
+    fi
+    # Validate the downloaded file before committing it to the cache.
+    if ! unzip -t "${tmp_dest}" >/dev/null 2>&1; then
+        rm -f "${tmp_dest}"
+        echo "[bag-player/kitti] ERROR: Downloaded file from '${url}' failed zip integrity check." >&2
+        exit 1
+    fi
+    mv "${tmp_dest}" "${dest}"
 }
 
 # -------------------------------------------------------------------------
