@@ -16,15 +16,39 @@ services:
       context: ./bag-player
     image: ghcr.io/lcas/mdpcalib-bag-player:latest
     volumes:
-      # Host directory containing your rosbag2 folders.
+      # Mode 'ros2bag' (default): host directory containing your rosbag2 folders.
       # Defaults to $HOME/rosbags on the host; override with ROSBAG_PATH in .env.
       - ${ROSBAG_PATH:-${HOME}/rosbags}:/rosbags
+      # Mode 'kitti': named Docker volume for KITTI raw data + converted ros2bag.
+      # Data is downloaded automatically on first run and cached here.
+      # Use a named volume (not a bind mount) so Docker manages the lifecycle.
+      - kitti_data:/kitti
     environment:
+      # Select playback mode: 'ros2bag' (default) or 'kitti'
+      - PLAYBACK_MODE=${PLAYBACK_MODE:-ros2bag}
+
+      # --- ros2bag mode variables ---
       # Path inside the container to the rosbag2 folder to play.
       - BAG_PATH=${BAG_PATH:-/rosbags}
       # Loop the bag by default so calibration has time to complete.
       - BAG_LOOP=${BAG_LOOP:-true}
       - BAG_RATE=${BAG_RATE:-1.0}
+
+      # --- kitti mode variables ---
+      # KITTI recording date and drive (default: sequence 00 = 2011_10_03 drive 0027)
+      - KITTI_DATE=${KITTI_DATE:-2011_10_03}
+      - KITTI_DRIVE=${KITTI_DRIVE:-0027}
+      # Which colour camera to use: 'left' or 'right'
+      - KITTI_CAMERA=${KITTI_CAMERA:-left}
+      # Odometry sequence number for motion-compensated velodyne (default: 00)
+      - KITTI_SEQUENCE=${KITTI_SEQUENCE:-00}
+
+      # --- sensor topics (shared by both modes) ---
+      - ROS2_CAMERA_IMAGE_TOPIC=${ROS2_CAMERA_IMAGE_TOPIC:-/camera/image_raw}
+      - ROS2_CAMERA_INFO_TOPIC=${ROS2_CAMERA_INFO_TOPIC:-/camera/camera_info}
+      - ROS2_LIDAR_POINTS_TOPIC=${ROS2_LIDAR_POINTS_TOPIC:-/points_raw}
+      - ROS2_IMU_TOPIC=${ROS2_IMU_TOPIC:-/imu/data}
+
       - ROS_DOMAIN_ID=${ROS_DOMAIN_ID:-0}
     networks:
       - mdpcalib_net
@@ -55,6 +79,8 @@ services:
       - LIDAR_FRAME_ID=${LIDAR_FRAME_ID:-lidar}
       - CAMERA_FRAME_ID=${CAMERA_FRAME_ID:-camera}
       - ROS_DOMAIN_ID=${ROS_DOMAIN_ID:-0}
+      # FAST-LO sensor config — use velodyne.yaml for KITTI (HDL-64E), ouster.yaml (default) for Ouster
+      - FAST_LO_CONFIG_FILE=${FAST_LO_CONFIG_FILE:-}
 
     deploy:
       resources:
@@ -78,6 +104,7 @@ services:
 
 volumes:
   x11:
+  kitti_data:
 
 networks:
   mdpcalib_net:

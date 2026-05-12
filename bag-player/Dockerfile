@@ -18,7 +18,10 @@ RUN rosdep update --rosdistro "${ROS_DISTRO}" \
     && rosdep install --from-paths /workspace/src --ignore-src -r -y \
     && rm -rf /var/lib/apt/lists/*
 
-COPY play_bag.sh /workspace/play_bag.sh
-RUN chmod +x /workspace/play_bag.sh
+# Python packages required for KITTI → ros2bag conversion (no rosdep keys available)
+RUN pip3 install --no-cache-dir pykitti progressbar2
+
+COPY play_bag.sh play_kitti.sh kitti_to_ros2bag.py /workspace/
+RUN chmod +x /workspace/play_bag.sh /workspace/play_kitti.sh
 
 CMD ["/workspace/play_bag.sh"]

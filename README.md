@@ -89,19 +89,46 @@ The calibration starts automatically once the bag begins playing. Logs are writt
 
 Open **http://localhost:5801** in a browser to view the RViz / GUI output via VNC.
 
+##### Quick start — calibrate from KITTI
+
+The `bag-player` service also supports a built-in KITTI mode that downloads the KITTI raw_synced dataset automatically, converts it to a ROS 2 bag, and plays it. All data is stored in the `kitti_data` named Docker volume — no host bind mount or manual download is required.
+
+> **⚠ Note:** The initial download is ~9 GB (raw sync + calibration + odometry velodyne). After the first run the data is cached in the Docker volume; subsequent `docker compose up` invocations skip both the download and the conversion step.
+
+1. Copy and edit `.env` as above, then add / uncomment:
+   ```ini
+   PLAYBACK_MODE=kitti
+   # Use the Velodyne HDL-64E FAST-LO config for KITTI:
+   FAST_LO_CONFIG_FILE=/root/catkin_ws/src/mdpcalib/FAST_LO/config/velodyne.yaml
+   ```
+2. Start the stack:
+   ```bash
+   docker compose up
+   ```
+   The bag-player will download the KITTI data into the `kitti_data` volume, convert it to a
+   ROS 2 bag, and start playback. The calibration stack starts automatically in `mdpcalib`.
+
+To change the KITTI sequence, override `KITTI_DATE`, `KITTI_DRIVE`, and `KITTI_SEQUENCE` in `.env`
+(see `.env.example` for details and the [KITTI mapping table](https://github.com/tomas789/kitti2bag/issues/10#issuecomment-352962278)).
+
 The `.env` file controls the following variables (see [`.env.example`](.env.example) for full documentation):
 
 | Variable | Default | Description |
 |---|---|---|
 | `CALIBRATION_DATA_PATH` | `./calibration-data` | Host path for calibration output + model weights (auto-downloaded) |
-| `ROSBAG_PATH` | `$HOME/rosbags` | Host directory mounted as `/rosbags` in the bag-player container |
-| `BAG_PATH` | `/rosbags` | Path inside the container to the rosbag2 folder to play |
+| `PLAYBACK_MODE` | `ros2bag` | `ros2bag` — play from file; `kitti` — download and play KITTI |
+| `ROSBAG_PATH` | `$HOME/rosbags` | Host directory mounted as `/rosbags` in the bag-player (ros2bag mode) |
+| `BAG_PATH` | `/rosbags` | Path inside container to the rosbag2 folder (ros2bag mode) |
 | `BAG_LOOP` | `true` | Set to `false` to play once and exit |
 | `BAG_RATE` | `1.0` | Playback rate multiplier |
-| `ROS2_CAMERA_IMAGE_TOPIC` | `/camera/image_raw` | Camera image topic in the bag |
-| `ROS2_CAMERA_INFO_TOPIC` | `/camera/camera_info` | Camera info topic in the bag |
-| `ROS2_LIDAR_POINTS_TOPIC` | `/points_raw` | LiDAR point cloud topic in the bag |
-| `ROS2_IMU_TOPIC` | `/imu/data` | IMU topic in the bag |
+| `KITTI_DATE` | `2011_10_03` | KITTI recording date (kitti mode) |
+| `KITTI_DRIVE` | `0027` | KITTI drive number, zero-padded (kitti mode) |
+| `KITTI_CAMERA` | `left` | Colour camera: `left` or `right` (kitti mode) |
+| `KITTI_SEQUENCE` | `00` | Odometry sequence for motion-compensated velodyne (kitti mode) |
+| `ROS2_CAMERA_IMAGE_TOPIC` | `/camera/image_raw` | Camera image topic |
+| `ROS2_CAMERA_INFO_TOPIC` | `/camera/camera_info` | Camera info topic |
+| `ROS2_LIDAR_POINTS_TOPIC` | `/points_raw` | LiDAR point cloud topic |
+| `ROS2_IMU_TOPIC` | `/imu/data` | IMU topic |
 | `LIDAR_FRAME_ID` | `lidar` | LiDAR frame ID in the exported YAML |
 | `CAMERA_FRAME_ID` | `camera` | Camera frame ID in the exported YAML |
 

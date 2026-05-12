@@ -1,13 +1,23 @@
 #!/usr/bin/env bash
 # Entry-point for the bag-player container.
-# Plays a ros2bag folder and loops until stopped (or until BAG_LOOP=false).
 #
-# Environment variables:
+# PLAYBACK_MODE selects the data source:
+#   ros2bag (default) — play an existing ros2bag folder from BAG_PATH
+#   kitti             — download KITTI raw_synced data, convert to ros2bag,
+#                       and play it (see play_kitti.sh for full variable docs)
+#
+# ros2bag mode variables:
 #   BAG_PATH  — absolute path inside the container to the rosbag2 folder (default: /rosbags)
 #   BAG_LOOP  — set to "false" to play once and exit (default: true)
 #   BAG_RATE  — playback rate multiplier, e.g. 0.5 for half speed (default: 1.0)
 
 set -euo pipefail
+
+PLAYBACK_MODE="${PLAYBACK_MODE:-ros2bag}"
+
+if [[ "${PLAYBACK_MODE}" == "kitti" ]]; then
+    exec /workspace/play_kitti.sh
+fi
 
 # ROS 2 setup scripts may reference unset variables; disable nounset around them.
 set +u
